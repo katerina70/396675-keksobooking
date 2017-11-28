@@ -1,116 +1,128 @@
 'use strict';
-// Создаем функцию для получения случайного целого числа в диапазоне
+
+var NUMBERS_AVATAR = [1, 2, 3, 4, 5, 6, 7, 8];
+var TITLE_VALUES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
+var TYPE_VALUES = ['flat', 'house', 'bungalo'];
+var CHECK_TIMES = ['12:00', '13:00', '14:00'];
+var FEATURES_ITEMS = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+var photosItems = [];
+var MIN_ROOM = 1;
+var MAX_ROOM = 6;
+var MIN_GUEST = 1;
+var MAX_GUEST = 12;
+
 var getRandom = function (min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 };
 
-// создаем значения для author ??????????? не понимаю, почему number = undefined (((((((((( То есть другими словами я вообще не понимаю, как вернуть один элемент массива хоть последовательно, хоть рандомный, неповторящийся.  
-
-var numbers = [1, 2, 3, 4, 5, 6, 7, 8];
-
-var getNumber = function () {
-  for (var i = 0; i <= 8; i++) {
-    var number = numbers[i];
-  }
-  return number;
-};
-
-var getAuthor = function () {
-  return {
-    avatar: 'img/avatars/user0' + getNumber() + '.png'
-  };
-};
-
-
-// Cоздаем значение для tittle
-var titleValues = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
-// ??????????????  Не могу сделать, чтобы они не повторялись(((((
-
-var getTitle = function () {
-  for (var n = 0; n <= titleValues.length; n++) {
-    var arrTemp = titleValues;
-    var randomIndex = getRandom(0, arrTemp.length);
-    var titleValue = arrTemp[randomIndex];
+function randomArr(arr) {
+  var arrTemp = arr.slice();
+  var newLength = Math.ceil(Math.random() * arrTemp.length);
+  var newArray = [];
+  for (var i = 0; i < newLength; i++) {
+    var randomIndex = Math.floor(Math.random() * arrTemp.length);
+    newArray[i] = arrTemp[randomIndex];
     arrTemp.splice(randomIndex, 1);
   }
-  return titleValue;
-};
-// Массив значений для type
-var typeValues = ['flat', 'house', 'bungalo'];
-// Массив значений для checkin/out
-var checkTime = ['12:00', '13:00', '14:00'];
 
-// Находим значение для features
-var featuresItems = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-
-var getFeatures = function (arr) {
-  var arrTemp = arr;
-  var array = [];
-  for (var m = 0; m <= getRandom(1, arr.length); m++) {
-    var i = getRandom(0, arrTemp.length);
-    var randomItem = arrTemp[i];
-    array.push(randomItem);
-    arrTemp.splice(i, 1);
-  }
-  return array.join(', ');
-};
-// Создаем массив photos
-var photosItems = [];
-
-// Создаем объект offer
-var getOffer = function () {
-  return {
-    title: getTitle(),
-    address: 'location.' + getRandom(300, 900) + ',' + 'location.' + getRandom(100, 500),
-    price: getRandom(1000, 1000001),
-    type: typeValues[getRandom(0, 3)],
-    rooms: getRandom(1, 6),
-    guests: getRandom(1, 12),
-    checkin: checkTime[getRandom(0, 3)],
-    checkout: checkTime[getRandom(0, 3)],
-    features: getFeatures(featuresItems),
-    description: '',
-    photos: photosItems
-
-  };
-};
-// Создаем объект location
-
-var getLocation = function () {
-  return {
-    x: getRandom(300, 900),
-    y: getRandom(100, 500)
-  };
-};
-
-// создаем объект announcement
-
-var getAnnouncement = function () {
-  return {
-    author: getAuthor(),
-    offer: getOffer(),
-    location: getLocation()
-  };
-};
-
-// создаем массив из 8 объектов announcement
+  return newArray;
+}
 
 var announcements = [];
 for (var i = 0; i < 8; i++) {
-  announcements.push(getAnnouncement());
+  var locationX = getRandom(300, 900);
+  var locationY = getRandom(100, 500);
+  announcements[i] = {
+    author: {
+      avatar: 'img/avatars/user0' + NUMBERS_AVATAR[i] + '.png'
+    },
+    offer: {
+      title: TITLE_VALUES[i],
+      address: 'location.' + locationX + ', ' + 'location.' + locationY,
+      price: getRandom(1000, 1000001),
+      type: TYPE_VALUES[getRandom(0, TYPE_VALUES.length)],
+      rooms: getRandom(MIN_ROOM, MAX_ROOM),
+      guests: getRandom(MIN_GUEST, MAX_GUEST),
+      checkin: CHECK_TIMES[getRandom(0, CHECK_TIMES.length)],
+      checkout: CHECK_TIMES[getRandom(0, CHECK_TIMES.length)],
+      features: randomArr(FEATURES_ITEMS),
+      description: '',
+      photos: photosItems
+
+    },
+    location: {
+      x: locationX,
+      y: locationY
+    }
+  };
 }
-
-
-// Удаляем класс у map
 var mapTokio = document.querySelector('.map');
 mapTokio.classList.remove('map--faded');
 
-// Создаем элемент button и отрисовываем его в maps__pins
-var mapsPin = document.querySelector('.map__pins');
+var template = document.querySelector('template').content;
+var getButtonMap = function (ad) {
+  var buttonTemplate = template.querySelector('.map__pin');
+  var buttonMap = buttonTemplate.cloneNode(true);
+  buttonMap.style.left = (ad.location.x - 20) + 'px';
+  buttonMap.style.top = (ad.location.y - 22) + 'px';
+  buttonMap.firstChild.setAttribute('src', ad.author.avatar);
+  return buttonMap;
+};
 
-var fragment = mapsPin.createDocumentFragment();
+var mapPins = document.querySelector('.map__pins');
+var fragment = document.createDocumentFragment();
+for (var n = 0; n < announcements.length; n++) {
+  fragment.appendChild(getButtonMap(announcements[n]));
+  mapPins.appendChild(fragment);
+}
 
-var adressPin = document.createElement('BUTTON');
-adressPin.className = 'map__pin';
-adressPin.style.cssText = 'left:' + getLocation().x + ';' + 'top:' + getLocation().y + 'px;';
-fragment.appendChild(adressPin);
+function typeTranslateRus(type) {
+  if (type === 'flat') {
+    return 'Квартира';
+  } else if (type === 'house') {
+    return 'Дом';
+  } else {
+    return 'Бунгало';
+  }
+}
+
+
+var getArticleProperty = function (e) {
+  var articleTemplate = template.querySelector('.map__card');
+  var articleProperty = articleTemplate.cloneNode(true);
+
+  articleProperty.querySelector('h3').textContent = announcements[e].offer.title;
+  articleProperty.querySelector('small').textContent = announcements[e].offer.address;
+  articleProperty.querySelector('.popup__price').textContent = announcements[e].offer.price + ' ₽' + '/ночь';
+  articleProperty.querySelector('h4').textContent = typeTranslateRus(announcements[e].offer.type);
+  articleProperty.getElementsByTagName('p')[2].textContent = announcements[e].offer.rooms + ' комнаты для ' + announcements[e].offer.guests + ' гостей';
+  articleProperty.getElementsByTagName('p')[3].textContent = 'Заезд после ' + announcements[e].offer.checkin + ', выезд до' + announcements[e].offer.checkout;
+  articleProperty.getElementsByTagName('p')[4].textContent = announcements[e].offer.description;
+  articleProperty.querySelector('.popup__avatar').setAttribute('src', announcements[e].author.avatar);
+  // Изменяем features
+  var popupFeatures = articleProperty.querySelector('.popup__features');
+  var featuresList = popupFeatures.querySelectorAll('.feature');
+  var namesFeatures = [];
+  for (i = 0; i < featuresList.length; i++) {
+    var nameFeature = featuresList[i].className;
+    namesFeatures.push(nameFeature);
+    featuresList[i].style.display = 'none';
+  }
+  var namesFeaturesFound = [];
+  for (i = 0; i < announcements[e].offer.features.length; i++) {
+    var nameFeaturesFound = 'feature feature--' + announcements[e].offer.features[i];
+    namesFeaturesFound.push(nameFeaturesFound);
+  }
+
+  for (var h = 0; h < namesFeatures.length; h++) {
+    for (var j = 0; j < namesFeaturesFound.length; j++) {
+      if (namesFeatures[h] === namesFeaturesFound[j]) {
+        featuresList[h].style.display = 'inline-block';
+      }
+    }
+  }
+  return articleProperty;
+};
+
+var mapFilters = mapTokio.querySelector('.map__filters-container');
+mapTokio.insertBefore(getArticleProperty(0), mapFilters);
