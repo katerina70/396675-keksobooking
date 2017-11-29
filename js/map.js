@@ -99,24 +99,19 @@ var getArticleProperty = function (index) {
   articleProperty.querySelectorAll('p')[3].textContent = 'Заезд после ' + offerItem.checkin + ', выезд до' + offerItem.checkout;
   articleProperty.querySelectorAll('p')[4].textContent = offerItem.description;
   articleProperty.querySelector('.popup__avatar').src = announcements[index].author.avatar;
-
   var popupFeatures = articleProperty.querySelector('.popup__features');
   var featuresList = popupFeatures.querySelectorAll('.feature');
   for (i = 0; i < featuresList.length; i++) {
-    featuresList[i].style.display = 'none';
-  }
+    featuresList[i].classList.add('hidden');
 
-  for (var h = 0; h < featuresList.length; h++) {
-    for (var j = 0; j < offerItem.features.length; j++) {
-      var classFeaturesNew = 'feature feature--' + offerItem.features[j];
-      if (featuresList[h].className === classFeaturesNew) {
-        featuresList[h].style.display = 'inline-block';
-      }
-    }
+  }
+  for (var h = 0; h < offerItem.features.length; h++) {
+    articleProperty.querySelector('feature--' + offerItem.features[h]);
+    featuresList[h].classList.remove('hidden');
+
   }
 
   return articleProperty;
 };
-
 var mapFilters = mapTokio.querySelector('.map__filters-container');
 mapTokio.insertBefore(getArticleProperty(0), mapFilters);
