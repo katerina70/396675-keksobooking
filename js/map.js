@@ -30,7 +30,7 @@ function randomArr(arr) {
 var announcements = [];
 for (var i = 0; i < 8; i++) {
   var locationX = getRandom(300, 900);
-  var locationY = getRandom(100, 500);
+  var locationY = getRandom(200, 500);
   var numberAvatar = i + 1;
   announcements[i] = {
     author: {
@@ -64,7 +64,7 @@ var buttonTemplate = template.querySelector('.map__pin');
 var getButtonMap = function (ad) {
   var buttonMap = buttonTemplate.cloneNode(true);
   buttonMap.style.left = (ad.location.x - 20) + 'px';
-  buttonMap.style.top = (ad.location.y - 22) + 'px';
+  buttonMap.style.top = (ad.location.y - 60) + 'px';
   buttonMap.querySelector('img').src = ad.author.avatar;
   return buttonMap;
 };
@@ -86,30 +86,35 @@ var typeTranslateRus = function (type) {
       return 'Бунгало';
   }
 };
+var articleTemplate = template.querySelector('.map__card');
+var getHidden = function (list) {
+  for (i = 0; i < list.length; i++) {
+    list[i].classList.add('hidden');
+  }
+  return list;
+};
+getHidden(articleTemplate.querySelectorAll('.feature'));
 
 var getArticleProperty = function (index) {
-  var articleTemplate = template.querySelector('.map__card');
   var articleProperty = articleTemplate.cloneNode(true);
   var offerItem = announcements[index].offer;
+  var articleP = articleProperty.querySelectorAll('p');
   articleProperty.querySelector('h3').textContent = offerItem.title;
   articleProperty.querySelector('small').textContent = offerItem.address;
   articleProperty.querySelector('.popup__price').textContent = offerItem.price + ' ₽' + '/ночь';
   articleProperty.querySelector('h4').textContent = typeTranslateRus(offerItem.type);
-  articleProperty.querySelectorAll('p')[2].textContent = offerItem.rooms + ' комнаты для ' + offerItem.guests + ' гостей';
-  articleProperty.querySelectorAll('p')[3].textContent = 'Заезд после ' + offerItem.checkin + ', выезд до' + offerItem.checkout;
-  articleProperty.querySelectorAll('p')[4].textContent = offerItem.description;
+  articleP[2].textContent = offerItem.rooms + ' комнаты для ' + offerItem.guests + ' гостей';
+  articleP[3].textContent = 'Заезд после ' + offerItem.checkin + ', выезд до' + offerItem.checkout;
+  articleP[4].textContent = offerItem.description;
   articleProperty.querySelector('.popup__avatar').src = announcements[index].author.avatar;
-  var popupFeatures = articleProperty.querySelector('.popup__features');
-  var featuresList = popupFeatures.querySelectorAll('.feature');
-  for (i = 0; i < featuresList.length; i++) {
-    featuresList[i].classList.add('hidden');
-
-  }
-  for (var h = 0; h < offerItem.features.length; h++) {
-    articleProperty.querySelector('feature--' + offerItem.features[h]);
-    featuresList[h].classList.remove('hidden');
-
-  }
+  var getShown = function (array, list) {
+    for (var h = 0; h < array.length; h++) {
+      articleTemplate.querySelector('feature--' + array[h]);
+      list[h].classList.remove('hidden');
+    }
+    return list;
+  };
+  getShown(offerItem.features, articleProperty.querySelectorAll('.feature'));
 
   return articleProperty;
 };
