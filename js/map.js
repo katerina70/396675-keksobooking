@@ -87,13 +87,14 @@ var typeTranslateRus = function (type) {
   }
 };
 var articleTemplate = template.querySelector('.map__card');
-var getHidden = function (list) {
-  for (i = 0; i < list.length; i++) {
-    list[i].classList.add('hidden');
+var getHidden = function () {
+  var listHidden = articleTemplate.querySelectorAll('.feature');
+  for (i = 0; i < listHidden.length; i++) {
+    listHidden[i].classList.add('hidden');
   }
-  return list;
+  return listHidden;
 };
-getHidden(articleTemplate.querySelectorAll('.feature'));
+getHidden();
 
 var getArticleProperty = function (index) {
   var articleProperty = articleTemplate.cloneNode(true);
@@ -107,15 +108,16 @@ var getArticleProperty = function (index) {
   articleP[3].textContent = 'Заезд после ' + offerItem.checkin + ', выезд до' + offerItem.checkout;
   articleP[4].textContent = offerItem.description;
   articleProperty.querySelector('.popup__avatar').src = announcements[index].author.avatar;
-  var getShown = function (array, list) {
+  var getShown = function () {
+    var array = offerItem.features;
+    var listShown = articleProperty.querySelectorAll('.feature');
     for (var h = 0; h < array.length; h++) {
       articleTemplate.querySelector('feature--' + array[h]);
-      list[h].classList.remove('hidden');
+      listShown[h].classList.remove('hidden');
     }
-    return list;
+    return listShown;
   };
-  getShown(offerItem.features, articleProperty.querySelectorAll('.feature'));
-
+  getShown();
   return articleProperty;
 };
 var mapFilters = mapTokio.querySelector('.map__filters-container');
