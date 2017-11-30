@@ -86,6 +86,7 @@ var typeTranslateRus = function (type) {
       return 'Бунгало';
   }
 };
+
 var articleTemplate = template.querySelector('.map__card');
 var getHidden = function () {
   var listHidden = articleTemplate.querySelectorAll('.feature');
@@ -108,16 +109,6 @@ var getArticleProperty = function (index) {
   articleP[3].textContent = 'Заезд после ' + offerItem.checkin + ', выезд до' + offerItem.checkout;
   articleP[4].textContent = offerItem.description;
   articleProperty.querySelector('.popup__avatar').src = announcements[index].author.avatar;
-  var getShown = function () {
-    var array = offerItem.features;
-    var listShown = articleProperty.querySelectorAll('.feature');
-    for (var h = 0; h < array.length; h++) {
-      articleTemplate.querySelector('feature--' + array[h]);
-      listShown[h].classList.remove('hidden');
-    }
-    return listShown;
-  };
-  getShown();
   return articleProperty;
 };
 var mapFilters = mapTokio.querySelector('.map__filters-container');
