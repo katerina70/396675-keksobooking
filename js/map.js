@@ -91,7 +91,8 @@ var typeTranslateRus = function (type) {
 };
 
 var articleTemplate = template.querySelector('.map__card');
-var featuresList = articleTemplate.querySelectorAll('.feature');
+var card = articleTemplate.cloneNode(true);
+var featuresList = card.querySelectorAll('.feature');
 
 var hideFeatures = function () {
   for (var i = 0; i < featuresList.length; i++) {
@@ -99,19 +100,16 @@ var hideFeatures = function () {
   }
 };
 
-var showFeatures = function (adItem, newList) {
-  var array = adItem.features;
-  for (var i = 0; i < array.length; i++) {
-    articleTemplate.querySelector('feature--' + array[i]);
-    newList[i].classList.remove('hidden');
+var showFeatures = function (features) {
+  for (var i = 0; i < features.length; i++) {
+    featuresList[i].classList.remove('hidden');
   }
 };
-hideFeatures();
+
 
 var fillCard = function (index) {
   var offerItem = announcements[index].offer;
   var articleP = card.querySelectorAll('p');
-  var featuresListNew = card.querySelectorAll('.feature');
 
   card.querySelector('h3').textContent = offerItem.title;
   card.querySelector('small').textContent = offerItem.address;
@@ -122,7 +120,8 @@ var fillCard = function (index) {
   articleP[4].textContent = offerItem.description;
   card.querySelector('.popup__avatar').src = announcements[index].author.avatar;
 
-  showFeatures(offerItem, featuresListNew);
+  hideFeatures();
+  showFeatures(offerItem.features);
 };
 
 var mapTokio = document.querySelector('.map');
@@ -132,17 +131,15 @@ var fieldsNotice = noticeForm.querySelectorAll('fieldset');
 
 var disableFields = function () {
   for (var i = 0; i < fieldsNotice.length; i++) {
-    fieldsNotice[i].setAttribute('disabled', '');
+    fieldsNotice[i].disabled = true;
   }
 };
-disableFields();
 
 var enableFields = function () {
   for (var i = 0; i < fieldsNotice.length; i++) {
-    fieldsNotice[i].removeAttribute('disabled', '');
+    fieldsNotice[i].disabled = false;
   }
 };
-enableFields();
 
 var pinMain = mapTokio.querySelector('.map__pin--main');
 var pinElements = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
@@ -209,7 +206,6 @@ pinMain.addEventListener('keydown', function (evt) {
 
 // открытие-закрытие карточек
 
-var card = articleTemplate.cloneNode(true);
 card.classList.add('hidden');
 mapTokio.insertBefore(card, mapFilters);
 var cardsClose = document.querySelector('.popup__close');
@@ -231,9 +227,8 @@ var openCard = function (index) {
   document.addEventListener('keydown', onEscPress);
 };
 
-var closeCard = function (index) {
+var closeCard = function () {
   card.classList.add('hidden');
-  pinElements[index].classList.remove('map__pin--active');
   document.removeEventListener('keydown', onEscPress);
 };
 
@@ -242,35 +237,30 @@ var onPinClick = function (index) {
     openCard(index);
   };
 };
-var onCardsCloseClick = function (index) {
-  return function () {
-    closeCard(index);
-  };
-};
 
 var onPinEnterPress = function (evt, index) {
   if (evt.keyCode === ENTER_KEYCODE) {
-    onPinClick(index);
+    openCard(index);
   }
 };
 
 var onEscPress = function (evt) {
-
   if (evt.keyCode === ESC_KEYCODE) {
     card.classList.add('hidden');
     document.querySelector('.map__pin--active').classList.remove('map__pin--active');
   }
 };
 
-var onCloseEnterPress = function (evt, index) {
+var onCloseEnterPress = function (evt) {
   if (evt.keyCode === ENTER_KEYCODE) {
-    onCardsCloseClick(index);
+    closeCard();
   }
 };
 
 for (var e = 0; e < pinElements.length; e++) {
   pinElements[e].addEventListener('click', onPinClick(e));
-  cardsClose.addEventListener('click', onCardsCloseClick(e));
   pinElements[e].addEventListener('keydown', onPinEnterPress(e));
-  cardsClose.addEventListener('keydown', onCloseEnterPress(e));
 }
+
+cardsClose.addEventListener('click', closeCard);
+cardsClose.addEventListener('keydown', onCloseEnterPress);
