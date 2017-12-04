@@ -106,9 +106,9 @@ var showFeatures = function (adItem, newList) {
     newList[i].classList.remove('hidden');
   }
 };
+hideFeatures();
 
 var fillCard = function (index) {
-  var card = articleTemplate.cloneNode(true);
   var offerItem = announcements[index].offer;
   var articleP = card.querySelectorAll('p');
   var featuresListNew = card.querySelectorAll('.feature');
@@ -121,12 +121,8 @@ var fillCard = function (index) {
   articleP[3].textContent = 'Заезд после ' + offerItem.checkin + ', выезд до' + offerItem.checkout;
   articleP[4].textContent = offerItem.description;
   card.querySelector('.popup__avatar').src = announcements[index].author.avatar;
-  card.classList.add('hidden');
 
-  hideFeatures();
   showFeatures(offerItem, featuresListNew);
-
-  return card;
 };
 
 var mapTokio = document.querySelector('.map');
@@ -141,30 +137,21 @@ var disableFields = function () {
 };
 disableFields();
 
-var ableFields = function () {
+var enableFields = function () {
   for (var i = 0; i < fieldsNotice.length; i++) {
     fieldsNotice[i].removeAttribute('disabled', '');
   }
 };
-ableFields();
+enableFields();
 
 var pinMain = mapTokio.querySelector('.map__pin--main');
-var pin = mapPins.querySelectorAll('.map__pin');
+var pinElements = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
 var ENTER_KEYCODE = 13;
 var ESC_KEYCODE = 27;
 
-var addTabIndex = function (list) {
-  for (var i = 0; i < list.lenth; i++) {
-    list[i].setAttribute.tabIndex = 0;
-  }
-};
-addTabIndex(pin);
-
 var hidePins = function () {
-  for (var i = 0; i < pin.length; i++) {
-    if (pin[i].classList.contains('map__pin--main') === false) {
-      pin[i].classList.add('hidden');
-    }
+  for (var i = 0; i < pinElements.length; i++) {
+    pinElements[i].classList.add('hidden');
   }
 };
 hidePins();
@@ -207,11 +194,11 @@ pinMain.addEventListener('mousedown', function (evt) {
 
 var openMap = function () {
   mapTokio.classList.remove('map--faded');
-  for (var i = 0; i < pin.length; i++) {
-    pin[i].classList.remove('hidden');
+  for (var i = 0; i < pinElements.length; i++) {
+    pinElements[i].classList.remove('hidden');
   }
   noticeForm.classList.remove('notice__form--disabled');
-  ableFields();
+  enableFields();
 };
 
 pinMain.addEventListener('keydown', function (evt) {
@@ -222,95 +209,68 @@ pinMain.addEventListener('keydown', function (evt) {
 
 // открытие-закрытие карточек
 
-var getCards = function () {
-  var fragment = document.createDocumentFragment();
-  for (var i = 0; i < announcements.length; i++) {
-    fragment.appendChild(fillCard(i), mapFilters);
-  }
-  mapTokio.insertBefore(fragment, mapFilters);
-};
-getCards();
-
-var cards = document.querySelectorAll('.popup');
-var cardsClose = document.querySelectorAll('.popup__close');
-
-addTabIndex(cardsClose);
+var card = articleTemplate.cloneNode(true);
+card.classList.add('hidden');
+mapTokio.insertBefore(card, mapFilters);
+var cardsClose = document.querySelector('.popup__close');
+cardsClose.setAttribute.tabIndex = 0;
 
 var clearPin = function () {
-  for (var i = 0; i < pin.length; i++) {
-    if (pin[i].classList.contains('map__pin--active')) {
-      pin[i].classList.remove('map__pin--active');
+  for (var i = 0; i < pinElements.length; i++) {
+    if (pinElements[i].classList.contains('map__pin--active')) {
+      pinElements[i].classList.remove('map__pin--active');
     }
   }
 };
 
-var clearCard = function () {
-  for (var i = 0; i < cards.length; i++) {
-    if (!cards[i].classList.contains('hidden')) {
-      cards[i].classList.add('hidden');
-    }
-  }
-};
-
-var openPopup = function (button, index) {
+var openCard = function (index) {
   clearPin();
-  button.classList.add('map__pin--active');
-  clearCard();
-  cards[index].classList.remove('hidden');
-
+  pinElements[index].classList.add('map__pin--active');
+  fillCard(index);
+  card.classList.remove('hidden');
+  document.addEventListener('keydown', onEscPress);
 };
 
-var closePopup = function (index) {
-  if (!cards[index].classList.contains('hidden')) {
-    cards[index].classList.add('hidden');
-    pin[index + 1].classList.remove('map__pin--active');
+var closeCard = function (index) {
+  card.classList.add('hidden');
+  pinElements[index].classList.remove('map__pin--active');
+  document.removeEventListener('keydown', onEscPress);
+};
+
+var onPinClick = function (index) {
+  return function () {
+    openCard(index);
+  };
+};
+var onCardsCloseClick = function (index) {
+  return function () {
+    closeCard(index);
+  };
+};
+
+var onPinEnterPress = function (evt, index) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    onPinClick(index);
   }
 };
-var clickOpen = function (index) {
-  pin[index].addEventListener('click', function () {
-    openPopup(pin[index], index - 1);
-  });
-};
-for (var l = 1; l < pin.length; l++) {
-  clickOpen(l);
-}
-var keyOpen = function (index) {
-  pin[index].addEventListener('keydown', function (evt) {
-    if (evt.keyCode === ESC_KEYCODE) {
-      openPopup(pin[index], index - 1);
-    }
-  });
-};
-for (var a = 1; a < pin.length; a++) {
-  keyOpen(a);
-}
-var escClose = function (index) {
-  document.addEventListener('keydown', function (evt) {
-    if (evt.keyCode === ESC_KEYCODE) {
-      closePopup(index - 1);
-    }
-  });
-};
-for (var b = 1; b < pin.length; b++) {
-  escClose(b);
-}
-var clickClose = function (index) {
-  cardsClose[index].addEventListener('click', function () {
-    closePopup(index);
-  });
+
+var onEscPress = function (evt) {
+
+  if (evt.keyCode === ESC_KEYCODE) {
+    card.classList.add('hidden');
+    document.querySelector('.map__pin--active').classList.remove('map__pin--active');
+  }
 };
 
-for (var c = 0; c < cards.length; c++) {
-  clickClose(c);
-}
-
-var keyClose = function (index) {
-  cardsClose[index].addEventListener('keydown', function (evt) {
-    if (evt.keyCode === ENTER_KEYCODE) {
-      closePopup(index);
-    }
-  });
+var onCloseEnterPress = function (evt, index) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    onCardsCloseClick(index);
+  }
 };
-for (var d = 0; d < cards.length; d++) {
-  keyClose(d);
+
+for (var e = 0; e < pinElements.length; e++) {
+  pinElements[e].addEventListener('click', onPinClick(e));
+  cardsClose.addEventListener('click', onCardsCloseClick(e));
+  pinElements[e].addEventListener('keydown', onPinEnterPress(e));
+  cardsClose.addEventListener('keydown', onCloseEnterPress(e));
 }
