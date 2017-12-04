@@ -134,7 +134,7 @@ var disableFields = function () {
     fieldsNotice[i].disabled = true;
   }
 };
-
+disableFields();
 var enableFields = function () {
   for (var i = 0; i < fieldsNotice.length; i++) {
     fieldsNotice[i].disabled = false;
