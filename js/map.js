@@ -264,3 +264,90 @@ for (var e = 0; e < pinElements.length; e++) {
 
 cardsClose.addEventListener('click', closeCard);
 cardsClose.addEventListener('keydown', onCloseEnterPress);
+
+// Валидация формы
+
+var typePlace = noticeForm.querySelector('#type');
+var pricePlace = noticeForm.querySelector('#price');
+var timeInField = noticeForm.querySelector('#timein');
+var timeOutField = noticeForm.querySelector('#timeout');
+var roomNumber = noticeForm.querySelector('#room_number');
+var capacityPlace = noticeForm.querySelector('#capacity');
+var title = noticeForm.querySelector('#title');
+var address = noticeForm.querySelector('#address');
+var formSubmit = noticeForm.querySelector('.form__submit');
+
+// Цена-тип жилья
+
+var onTypePlaceChange = function (evt) {
+  var valuePlace = evt.currentTarget.value;
+
+  switch (valuePlace) {
+    case 'palace':
+      pricePlace.min = 10000;
+      break;
+    case 'flat':
+      pricePlace.min = 1000;
+      break;
+    case 'house':
+      pricePlace.min = 5000;
+      break;
+    default:
+      pricePlace.min = 0;
+  }
+};
+
+
+// время заезда-выезда
+var syncTimeInField = function () {
+  timeOutField.selectedIndex = timeInField.selectedIndex;
+};
+var syncTimeOutField = function () {
+  timeInField.selectedIndex = timeOutField.selectedIndex;
+};
+
+// комнаты-гости
+
+var capacityForRooms = {
+  rooms1: ['1'],
+  rooms2: ['2', '1'],
+  rooms3: ['3', '2', '1'],
+  rooms100: ['0']
+};
+
+var onCapacityChange = function (evt) {
+  var roomNumberValue = 'rooms' + evt.currentTarget.value;
+  for (var i = 0; i < capacityPlace.options.length; i++) {
+    var shownOptions = capacityForRooms[roomNumberValue];
+    var optionValue = capacityPlace.options[i].value;
+    capacityPlace.options[i].hidden = shownOptions.indexOf(optionValue) === -1;
+    if (shownOptions[0] === optionValue) {
+      var selectedOption = i;
+    }
+  }
+  capacityPlace.options[selectedOption].selected = true;
+};
+
+
+var checkValidField = function (field) {
+  if (!field.validity.valid) {
+    field.style.borderColor = '#ff5635';
+  } else {
+    field.style.borderColor = '';
+  }
+};
+var onSubmitClick = function () {
+  checkValidField(title);
+  checkValidField(address);
+  checkValidField(pricePlace);
+};
+var onValuesDefault = function () {
+  formSubmit.removeEventListener('click', onSubmitClick);
+};
+
+typePlace.addEventListener('change', onTypePlaceChange);
+roomNumber.addEventListener('change', onCapacityChange);
+timeInField.addEventListener('change', syncTimeInField);
+timeOutField.addEventListener('change', syncTimeOutField);
+formSubmit.addEventListener('click', onSubmitClick);
+formSubmit.addEventListener('submit', onValuesDefault);
