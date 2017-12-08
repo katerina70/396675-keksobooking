@@ -203,7 +203,7 @@ pinMain.addEventListener('mousedown', function (evt) {
 
   var onMouseUp = function (upEvt) {
     upEvt.preventDefault();
-    address.value = 'locationХ:' + getMainPinCoordinates().coordinateX + ', locationY:' + getMainPinCoordinates().coordinateY;
+    address.value = getMainPinCoordinates().coordinateX + ' ,' + getMainPinCoordinates().coordinateY;
     openMap();
     document.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('mouseup', onMouseUp);
@@ -340,8 +340,7 @@ var onCapacityChange = function (evt) {
 };
 
 var checkValidField = function (field) {
-  field.style.borderColor = (!field.validity.valid) ? '#ff5635' :
-    '';
+  field.style.borderColor = (!field.validity.valid) ? '#ff5635' : '';
 };
 var onSubmitClick = function () {
   checkValidField(title);
