@@ -154,10 +154,32 @@ var hidePins = function () {
 hidePins();
 
 // перетаскивание, открытие карты
+// координаты метки: нужно ли здесь вычисление высоты и  метки и сдвига (паддинги, бордеры и т.д.)????
+
+var mainPinHeight = 84;
+var mainPinShiftHeight = 34;
+var getMainPinCoordinates = function () {
+  var mainPinY = pinMain.offsetTop + mainPinHeight - mainPinShiftHeight;
+  var mainPinX = pinMain.offsetLeft;
+  return {
+    coordinateY: mainPinY,
+    coordinateX: mainPinX
+  };
+};
+var getLimitedY = function (startY, limitedY) {
+  var maxMoveY = startY - pinMain.offsetTop + 500 - (mainPinHeight - mainPinShiftHeight);
+  var minMoveY = startY - pinMain.offsetTop + 100 - (mainPinHeight - mainPinShiftHeight);
+  if (limitedY >= maxMoveY) {
+    return maxMoveY;
+  } else if (limitedY <= minMoveY) {
+    return minMoveY;
+  } else {
+    return limitedY;
+  }
+};
 
 pinMain.addEventListener('mousedown', function (evt) {
   evt.preventDefault();
-
   var startCoords = {
     x: evt.clientX,
     y: evt.clientY
@@ -167,7 +189,7 @@ pinMain.addEventListener('mousedown', function (evt) {
 
     var shift = {
       x: startCoords.x - moveEvt.clientX,
-      y: startCoords.y - moveEvt.clientY
+      y: startCoords.y - getLimitedY(startCoords.y, moveEvt.clientY)
     };
 
     startCoords = {
@@ -178,13 +200,14 @@ pinMain.addEventListener('mousedown', function (evt) {
     pinMain.style.top = (pinMain.offsetTop - shift.y) + 'px';
     pinMain.style.left = (pinMain.offsetLeft - shift.x) + 'px';
   };
+
   var onMouseUp = function (upEvt) {
     upEvt.preventDefault();
+    address.value = getMainPinCoordinates().coordinateX + ' ,' + getMainPinCoordinates().coordinateY;
     openMap();
     document.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('mouseup', onMouseUp);
   };
-
   document.addEventListener('mousemove', onMouseMove);
   document.addEventListener('mouseup', onMouseUp);
 });
@@ -264,3 +287,73 @@ for (var e = 0; e < pinElements.length; e++) {
 
 cardsClose.addEventListener('click', closeCard);
 cardsClose.addEventListener('keydown', onCloseEnterPress);
+
+// Валидация формы
+
+var typePlace = noticeForm.querySelector('#type');
+var pricePlace = noticeForm.querySelector('#price');
+var timeInField = noticeForm.querySelector('#timein');
+var timeOutField = noticeForm.querySelector('#timeout');
+var roomNumber = noticeForm.querySelector('#room_number');
+var capacityPlace = noticeForm.querySelector('#capacity');
+var title = noticeForm.querySelector('#title');
+var address = noticeForm.querySelector('#address');
+var formSubmit = noticeForm.querySelector('.form__submit');
+var MIN_PRICES = {
+  palace: 10000,
+  flat: 1000,
+  house: 5000,
+  bungalo: 0
+};
+
+var CAPACITY_ROOMS = {
+  rooms1: ['1'],
+  rooms2: ['2', '1'],
+  rooms3: ['3', '2', '1'],
+  rooms100: ['0']
+};
+// цена-тип жилья
+var onTypePlaceChange = function (evt) {
+  pricePlace.min = MIN_PRICES[evt.currentTarget.value];
+};
+// время заезда-выезда
+var syncTimeInField = function () {
+  timeOutField.selectedIndex = timeInField.selectedIndex;
+};
+var syncTimeOutField = function () {
+  timeInField.selectedIndex = timeOutField.selectedIndex;
+};
+
+// комнаты-гости
+
+var onCapacityChange = function (evt) {
+  var roomNumberValue = 'rooms' + evt.currentTarget.value;
+  for (var i = 0; i < capacityPlace.options.length; i++) {
+    var shownOptions = CAPACITY_ROOMS[roomNumberValue];
+    var optionValue = capacityPlace.options[i].value;
+    capacityPlace.options[i].hidden = shownOptions.indexOf(optionValue) === -1;
+    if (shownOptions[0] === optionValue) {
+      var selectedOption = i;
+    }
+  }
+  capacityPlace.options[selectedOption].selected = true;
+};
+
+var checkValidField = function (field) {
+  field.style.borderColor = (!field.validity.valid) ? '#ff5635' : '';
+};
+var onSubmitClick = function () {
+  checkValidField(title);
+  checkValidField(address);
+  checkValidField(pricePlace);
+};
+var onValuesDefault = function () {
+  formSubmit.removeEventListener('click', onSubmitClick);
+};
+
+typePlace.addEventListener('change', onTypePlaceChange);
+roomNumber.addEventListener('change', onCapacityChange);
+timeInField.addEventListener('change', syncTimeInField);
+timeOutField.addEventListener('change', syncTimeOutField);
+formSubmit.addEventListener('click', onSubmitClick);
+formSubmit.addEventListener('submit', onValuesDefault);
