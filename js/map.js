@@ -167,7 +167,9 @@ var getMainPinCoordinates = function () {
   };
 };
 var getLimitedY = function (startY, limitedY) {
-  var maxMoveY = startY - pinMain.offsetTop + 500 - (mainPinHeight - mainPinShiftHeight);
+  var mapPinsoverlay = document.querySelector('.map__pinsoverlay');
+  var maxMapY = mapPinsoverlay.offsetHeight;
+  var maxMoveY = startY - pinMain.offsetTop + maxMapY - (mainPinHeight - mainPinShiftHeight);
   var minMoveY = startY - pinMain.offsetTop + 100 - (mainPinHeight - mainPinShiftHeight);
   if (limitedY >= maxMoveY) {
     return maxMoveY;
