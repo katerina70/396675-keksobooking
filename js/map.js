@@ -154,7 +154,29 @@ var hidePins = function () {
 hidePins();
 
 // перетаскивание, открытие карты
+// координаты метки: нужно ли здесь вычисление высоты и  метки и сдвига (паддинги, бордеры и т.д.)????
 
+var mainPinHeight = 84;
+var mainPinShiftHeight = 34;
+var getMainPinCoordinates = function () {
+  var mainPinY = pinMain.offsetTop + mainPinHeight - mainPinShiftHeight;
+  var mainPinX = pinMain.offsetLeft;
+  return {
+    coordinateY: mainPinY,
+    coordinateX: mainPinX
+  };
+};
+var getLimitedY = function (startY, limitedY) {
+  var maxMoveY = startY - pinMain.offsetTop + 500 - (mainPinHeight - mainPinShiftHeight);
+  var minMoveY = startY - pinMain.offsetTop + 100 - (mainPinHeight - mainPinShiftHeight);
+  if (limitedY >= maxMoveY) {
+    return maxMoveY;
+  } else if (limitedY <= minMoveY) {
+    return minMoveY;
+  } else {
+    return limitedY;
+  }
+};
 
 pinMain.addEventListener('mousedown', function (evt) {
   evt.preventDefault();
@@ -167,7 +189,7 @@ pinMain.addEventListener('mousedown', function (evt) {
 
     var shift = {
       x: startCoords.x - moveEvt.clientX,
-      y: startCoords.y - moveEvt.clientY
+      y: startCoords.y - getLimitedY(startCoords.y, moveEvt.clientY)
     };
 
     startCoords = {
@@ -177,13 +199,11 @@ pinMain.addEventListener('mousedown', function (evt) {
 
     pinMain.style.top = (pinMain.offsetTop - shift.y) + 'px';
     pinMain.style.left = (pinMain.offsetLeft - shift.x) + 'px';
-
-    var addressX = pinMain.offsetLeft - shift.x;
-    var addressY = pinMain.offsetTop - shift.y + 48;
-    address.value = 'location.' + addressX + ', ' + 'location.' + addressY;
   };
+
   var onMouseUp = function (upEvt) {
     upEvt.preventDefault();
+    address.value = 'locationХ:' + getMainPinCoordinates().coordinateX + ', locationY:' + getMainPinCoordinates().coordinateY;
     openMap();
     document.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('mouseup', onMouseUp);
@@ -279,7 +299,6 @@ var capacityPlace = noticeForm.querySelector('#capacity');
 var title = noticeForm.querySelector('#title');
 var address = noticeForm.querySelector('#address');
 var formSubmit = noticeForm.querySelector('.form__submit');
-
 var MIN_PRICES = {
   palace: 10000,
   flat: 1000,
