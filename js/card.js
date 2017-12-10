@@ -12,8 +12,7 @@ window.card = (function () {
     }
   };
 
-  var template = document.querySelector('template').content;
-  var articleTemplate = template.querySelector('.map__card');
+  var articleTemplate = window.data.template.querySelector('.map__card');
   var card = articleTemplate.cloneNode(true);
   var featuresList = card.querySelectorAll('.feature');
 
@@ -28,7 +27,6 @@ window.card = (function () {
       featuresList[i].classList.remove('hidden');
     }
   };
-
 
   var fillCard = function (index) {
     var offerItem = window.data.announcements[index].offer;
@@ -47,9 +45,42 @@ window.card = (function () {
     showFeatures(offerItem.features);
   };
 
-  return {
-    card: card,
-    fillCard: fillCard,
-    template: template
+  var mapFilters = window.data.mapTokio.querySelector('.map__filters-container');
+  window.data.mapTokio.insertBefore(card, mapFilters);
+  card.classList.add('hidden');
+  var cardsClose = document.querySelector('.popup__close');
+  cardsClose.setAttribute.tabIndex = 0;
+
+  var onEscPress = function (evt) {
+    if (evt.keyCode === window.data.ESC_KEYCODE) {
+      card.classList.add('hidden');
+      document.querySelector('.map__pin--active').classList.remove('map__pin--active');
+    }
   };
+  var onCloseEnterPress = function (evt) {
+    if (evt.keyCode === window.data.ENTER_KEYCODE) {
+      closeCard();
+    }
+  };
+  var openCard = function (index) {
+    window.map.clearPin();
+    window.map.pinElements[index].classList.add('map__pin--active');
+    fillCard(index);
+    card.classList.remove('hidden');
+    document.addEventListener('keydown', onEscPress);
+  };
+
+  var closeCard = function () {
+    card.classList.add('hidden');
+    document.removeEventListener('keydown', onEscPress);
+  };
+
+  cardsClose.addEventListener('click', closeCard);
+  cardsClose.addEventListener('keydown', onCloseEnterPress);
+
+  return {
+    closeCard: closeCard,
+    openCard: openCard
+  };
+
 })();

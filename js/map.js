@@ -1,11 +1,27 @@
 'use strict';
-
 window.map = (function () {
-  var mapTokio = document.querySelector('.map');
+
+  var mapPins = document.querySelector('.map__pins');
+  var showPins = function () {
+    var fragment = document.createDocumentFragment();
+    for (var i = 0; i < window.data.announcements.length; i++) {
+      fragment.appendChild(window.pin.getPin(window.data.announcements[i]));
+    }
+    mapPins.appendChild(fragment);
+  };
+  showPins();
+  var pinElements = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
+
+  var hidePins = function () {
+    for (var i = 0; i < pinElements.length; i++) {
+      pinElements[i].classList.add('hidden');
+    }
+  };
+  hidePins();
+
   var noticeForm = document.querySelector('.notice__form');
   var address = noticeForm.querySelector('#address');
-  var mapFilters = mapTokio.querySelector('.map__filters-container');
-  var pinMain = mapTokio.querySelector('.map__pin--main');
+  var pinMain = window.data.mapTokio.querySelector('.map__pin--main');
 
   var mainPinHeight = 84;
   var mainPinShiftHeight = 34;
@@ -17,7 +33,7 @@ window.map = (function () {
       coordinateX: mainPinX
     };
   };
-  // oграничиваем движение пина главного картой
+
   var getLimitedY = function (startY, limitedY) {
     var mapPinsoverlay = document.querySelector('.map__pinsoverlay');
     var maxMapY = mapPinsoverlay.offsetHeight;
@@ -80,9 +96,9 @@ window.map = (function () {
     }
   };
   var openMap = function () {
-    mapTokio.classList.remove('map--faded');
-    for (var i = 0; i < window.pin.pinElements.length; i++) {
-      window.pin.pinElements[i].classList.remove('hidden');
+    window.data.mapTokio.classList.remove('map--faded');
+    for (var i = 0; i < pinElements.length; i++) {
+      pinElements[i].classList.remove('hidden');
     }
     noticeForm.classList.remove('notice__form--disabled');
     enableFields();
@@ -94,69 +110,34 @@ window.map = (function () {
     }
   });
 
-  // открытие-закрытие карточек 
-
-  window.card.card.classList.add('hidden');
-  mapTokio.insertBefore(window.card.card, mapFilters);
-  var cardsClose = document.querySelector('.popup__close');
-  cardsClose.setAttribute.tabIndex = 0;
-
   var clearPin = function () {
-    for (var i = 0; i < window.pin.pinElements.length; i++) {
-      if (window.pin.pinElements[i].classList.contains('map__pin--active')) {
-        window.pin.pinElements[i].classList.remove('map__pin--active');
+    for (var i = 0; i < pinElements.length; i++) {
+      if (pinElements[i].classList.contains('map__pin--active')) {
+        pinElements[i].classList.remove('map__pin--active');
       }
     }
   };
 
-  var openCard = function (index) {
-    clearPin();
-    window.pin.pinElements[index].classList.add('map__pin--active');
-    window.card.fillCard(index);
-    window.card.card.classList.remove('hidden');
-    document.addEventListener('keydown', onEscPress);
-  };
-
-  var closeCard = function () {
-    window.card.card.classList.add('hidden');
-    document.removeEventListener('keydown', onEscPress);
-  };
-
   var onPinClick = function (index) {
     return function () {
-      openCard(index);
+      window.card.openCard(index);
     };
   };
 
   var onPinEnterPress = function (evt, index) {
     if (evt.keyCode === window.data.ENTER_KEYCODE) {
-      openCard(index);
+      window.card.openCard(index);
     }
   };
-
-  var onEscPress = function (evt) {
-    if (evt.keyCode === window.data.ESC_KEYCODE) {
-      window.card.card.classList.add('hidden');
-      document.querySelector('.map__pin--active').classList.remove('map__pin--active');
-    }
-  };
-  var onCloseEnterPress = function (evt) {
-    if (evt.keyCode === window.data.ENTER_KEYCODE) {
-      closeCard();
-    }
-  };
-
-  for (var e = 0; e < window.pin.pinElements.length; e++) {
-    window.pin.pinElements[e].addEventListener('click', onPinClick(e));
-    window.pin.pinElements[e].addEventListener('keydown', onPinEnterPress(e));
+  for (var e = 0; e < pinElements.length; e++) {
+    pinElements[e].addEventListener('click', onPinClick(e));
+    pinElements[e].addEventListener('keydown', onPinEnterPress(e));
   }
-
-  cardsClose.addEventListener('click', closeCard);
-  cardsClose.addEventListener('keydown', onCloseEnterPress);
 
   return {
     noticeForm: noticeForm,
     address: address,
-
+    clearPin: clearPin,
+    pinElements: pinElements
   };
 })();
