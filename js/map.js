@@ -93,13 +93,13 @@ window.map = (function () {
       openMap();
     }
   });
-
+  var activePin = null;
   var setPinActive = function (clickedPin) {
-    var activePin = mapPins.querySelector('.map__pin--active');
     if (activePin) {
       activePin.classList.remove('map__pin--active');
     }
     clickedPin.classList.add('map__pin--active');
+    activePin = clickedPin;
   };
   var removeActivePin = function () {
     document.querySelector('.map__pin--active').classList.remove('map__pin--active');

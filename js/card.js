@@ -2,8 +2,7 @@
 window.card = (function () {
   var card = document.querySelector('template').content.querySelector('.map__card').cloneNode(true);
 
-  var mapFilters = document.querySelector('.map__filters-container');
-  document.querySelector('.map').insertBefore(card, mapFilters);
+  document.querySelector('.map').appendChild(card);
 
   card.classList.add('hidden');
   var getPlaceType = function (type) {
