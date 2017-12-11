@@ -1,16 +1,10 @@
 'use strict';
 window.map = (function () {
-  var articleTemplate = window.data.template.querySelector('.map__card');
-  var card = articleTemplate.cloneNode(true);
-  var mapFilters = window.data.mapTokio.querySelector('.map__filters-container');
-  window.data.mapTokio.insertBefore(card, mapFilters);
-  card.classList.add('hidden');
-
   var mapPins = document.querySelector('.map__pins');
   var showPins = function () {
     var fragment = document.createDocumentFragment();
     for (var i = 0; i < window.data.announcements.length; i++) {
-      fragment.appendChild(window.pin.getPin(window.data.announcements[i]));
+      fragment.appendChild(window.pin.createPin(window.data.announcements[i]));
     }
     mapPins.appendChild(fragment);
   };
@@ -24,7 +18,7 @@ window.map = (function () {
   };
   hidePins();
 
-  var pinMain = window.data.mapTokio.querySelector('.map__pin--main');
+  var pinMain = document.querySelector('.map__pin--main');
 
   var mainPinHeight = 84;
   var mainPinShiftHeight = 34;
@@ -87,7 +81,7 @@ window.map = (function () {
 
   // открытие карты
   var openMap = function () {
-    window.data.mapTokio.classList.remove('map--faded');
+    document.querySelector('.map').classList.remove('map--faded');
     window.form.enableForm();
     for (var i = 0; i < pinElements.length; i++) {
       pinElements[i].classList.remove('hidden');
@@ -99,31 +93,28 @@ window.map = (function () {
       openMap();
     }
   });
-  // события пинов
 
-  var clearPin = function () {
+  var setPinActive = function (clickedPin) {
     var activePin = mapPins.querySelector('.map__pin--active');
     if (activePin) {
       activePin.classList.remove('map__pin--active');
     }
+    clickedPin.classList.add('map__pin--active');
   };
   var removeActivePin = function () {
     document.querySelector('.map__pin--active').classList.remove('map__pin--active');
-  };
-  var addActivePin = function (index) {
-    pinElements[index].classList.add('map__pin--active');
   };
 
   var onPinClick = function (index) {
     return function () {
       window.card.openCard(index);
-      addActivePin(index);
+      setPinActive(pinElements[index]);
     };
   };
   var onPinEnterPress = function (evt, index) {
     if (evt.keyCode === window.data.ENTER_KEYCODE) {
       window.card.openCard(index);
-      addActivePin(index);
+      setPinActive(pinElements[index]);
     }
   };
   for (var e = 0; e < pinElements.length; e++) {
@@ -132,8 +123,6 @@ window.map = (function () {
   }
 
   return {
-    clearPin: clearPin,
-    card: card,
     removeActivePin: removeActivePin
   };
 })();

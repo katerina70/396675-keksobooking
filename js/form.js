@@ -87,10 +87,9 @@ window.form = (function () {
   timeOutField.addEventListener('change', syncTimeOutField);
   formSubmit.addEventListener('click', onSubmitClick);
   formSubmit.addEventListener('submit', onValuesDefault);
-  return {
 
+  return {
     enableForm: enableForm,
     address: address
   };
-
 })();

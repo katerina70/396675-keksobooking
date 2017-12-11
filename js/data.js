@@ -60,13 +60,9 @@ window.data = (function () {
       }
     };
   }
-  var template = document.querySelector('template').content;
-  var mapTokio = document.querySelector('.map');
   return {
     announcements: announcements,
     ENTER_KEYCODE: ENTER_KEYCODE,
     ESC_KEYCODE: ESC_KEYCODE,
-    template: template,
-    mapTokio: mapTokio
   };
 })();

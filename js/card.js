@@ -1,6 +1,11 @@
 'use strict';
 window.card = (function () {
+  var card = document.querySelector('template').content.querySelector('.map__card').cloneNode(true);
 
+  var mapFilters = document.querySelector('.map__filters-container');
+  document.querySelector('.map').insertBefore(card, mapFilters);
+
+  card.classList.add('hidden');
   var getPlaceType = function (type) {
     switch (type) {
       case 'flat':
@@ -11,7 +16,7 @@ window.card = (function () {
         return 'Бунгало';
     }
   };
-  var featuresList = window.map.card.querySelectorAll('.feature');
+  var featuresList = card.querySelectorAll('.feature');
   var hideFeatures = function () {
     for (var i = 0; i < featuresList.length; i++) {
       featuresList[i].classList.add('hidden');
@@ -24,18 +29,17 @@ window.card = (function () {
     }
   };
 
-
   var fillCard = function (index) {
     var offerItem = window.data.announcements[index].offer;
-    var articleP = window.map.card.querySelectorAll('p');
-    window.map.card.querySelector('h3').textContent = offerItem.title;
-    window.map.card.querySelector('small').textContent = offerItem.address;
-    window.map.card.querySelector('.popup__price').textContent = offerItem.price + ' ₽' + '/ночь';
-    window.map.card.querySelector('h4').textContent = getPlaceType(offerItem.type);
+    var articleP = card.querySelectorAll('p');
+    card.querySelector('h3').textContent = offerItem.title;
+    card.querySelector('small').textContent = offerItem.address;
+    card.querySelector('.popup__price').textContent = offerItem.price + ' ₽' + '/ночь';
+    card.querySelector('h4').textContent = getPlaceType(offerItem.type);
     articleP[2].textContent = offerItem.rooms + ' комнаты для ' + offerItem.guests + ' гостей';
     articleP[3].textContent = 'Заезд после ' + offerItem.checkin + ', выезд до' + offerItem.checkout;
     articleP[4].textContent = offerItem.description;
-    window.map.card.querySelector('.popup__avatar').src = window.data.announcements[index].author.avatar;
+    card.querySelector('.popup__avatar').src = window.data.announcements[index].author.avatar;
 
     hideFeatures();
     showFeatures(offerItem.features);
@@ -46,7 +50,7 @@ window.card = (function () {
 
   var onEscPress = function (evt) {
     if (evt.keyCode === window.data.ESC_KEYCODE) {
-      window.map.card.classList.add('hidden');
+      card.classList.add('hidden');
       document.querySelector('.map__pin--active').classList.remove('map__pin--active');
     }
   };
@@ -57,14 +61,13 @@ window.card = (function () {
     }
   };
   var openCard = function (index) {
-    window.map.clearPin();
     fillCard(index);
-    window.map.card.classList.remove('hidden');
+    card.classList.remove('hidden');
     document.addEventListener('keydown', onEscPress);
   };
 
   var closeCard = function () {
-    window.map.card.classList.add('hidden');
+    card.classList.add('hidden');
     document.removeEventListener('keydown', onEscPress);
   };
 

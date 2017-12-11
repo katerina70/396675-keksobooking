@@ -1,8 +1,8 @@
 'use strict';
 window.pin = (function () {
-  var pinTemplate = window.data.template.querySelector('.map__pin');
+  var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
 
-  var getPin = function (ad) {
+  var createPin = function (ad) {
     var pin = pinTemplate.cloneNode(true);
     pin.id = ad.announcementId;
     pin.style.left = (ad.location.x - 20) + 'px';
@@ -11,7 +11,6 @@ window.pin = (function () {
     return pin;
   };
   return {
-    getPin: getPin
+    createPin: createPin
   };
-
 })();
