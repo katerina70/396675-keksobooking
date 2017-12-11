@@ -1,5 +1,10 @@
 'use strict';
 window.map = (function () {
+  var articleTemplate = window.data.template.querySelector('.map__card');
+  var card = articleTemplate.cloneNode(true);
+  var mapFilters = window.data.mapTokio.querySelector('.map__filters-container');
+  window.data.mapTokio.insertBefore(card, mapFilters);
+  card.classList.add('hidden');
 
   var mapPins = document.querySelector('.map__pins');
   var showPins = function () {
@@ -19,8 +24,6 @@ window.map = (function () {
   };
   hidePins();
 
-  var noticeForm = document.querySelector('.notice__form');
-  var address = noticeForm.querySelector('#address');
   var pinMain = window.data.mapTokio.querySelector('.map__pin--main');
 
   var mainPinHeight = 84;
@@ -73,7 +76,7 @@ window.map = (function () {
 
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
-      address.value = getMainPinCoordinates().coordinateX + ' ,' + getMainPinCoordinates().coordinateY;
+      window.form.address.value = getMainPinCoordinates().coordinateX + ' ,' + getMainPinCoordinates().coordinateY;
       openMap();
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
@@ -83,25 +86,12 @@ window.map = (function () {
   });
 
   // открытие карты
-  var fieldsNotice = noticeForm.querySelectorAll('fieldset');
-  var disableFields = function () {
-    for (var i = 0; i < fieldsNotice.length; i++) {
-      fieldsNotice[i].disabled = true;
-    }
-  };
-  disableFields();
-  var enableFields = function () {
-    for (var i = 0; i < fieldsNotice.length; i++) {
-      fieldsNotice[i].disabled = false;
-    }
-  };
   var openMap = function () {
     window.data.mapTokio.classList.remove('map--faded');
+    window.form.enableForm();
     for (var i = 0; i < pinElements.length; i++) {
       pinElements[i].classList.remove('hidden');
     }
-    noticeForm.classList.remove('notice__form--disabled');
-    enableFields();
   };
 
   pinMain.addEventListener('keydown', function (evt) {
@@ -109,24 +99,31 @@ window.map = (function () {
       openMap();
     }
   });
+  // события пинов
 
   var clearPin = function () {
-    for (var i = 0; i < pinElements.length; i++) {
-      if (pinElements[i].classList.contains('map__pin--active')) {
-        pinElements[i].classList.remove('map__pin--active');
-      }
+    var activePin = mapPins.querySelector('.map__pin--active');
+    if (activePin) {
+      activePin.classList.remove('map__pin--active');
     }
+  };
+  var removeActivePin = function () {
+    document.querySelector('.map__pin--active').classList.remove('map__pin--active');
+  };
+  var addActivePin = function (index) {
+    pinElements[index].classList.add('map__pin--active');
   };
 
   var onPinClick = function (index) {
     return function () {
       window.card.openCard(index);
+      addActivePin(index);
     };
   };
-
   var onPinEnterPress = function (evt, index) {
     if (evt.keyCode === window.data.ENTER_KEYCODE) {
       window.card.openCard(index);
+      addActivePin(index);
     }
   };
   for (var e = 0; e < pinElements.length; e++) {
@@ -135,9 +132,8 @@ window.map = (function () {
   }
 
   return {
-    noticeForm: noticeForm,
-    address: address,
     clearPin: clearPin,
-    pinElements: pinElements
+    card: card,
+    removeActivePin: removeActivePin
   };
 })();

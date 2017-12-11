@@ -1,15 +1,33 @@
 'use strict';
-(function () {
-  var typePlace = window.map.noticeForm.querySelector('#type');
-  var pricePlace = window.map.noticeForm.querySelector('#price');
-  var timeInField = window.map.noticeForm.querySelector('#timein');
-  var timeOutField = window.map.noticeForm.querySelector('#timeout');
-  var roomNumber = window.map.noticeForm.querySelector('#room_number');
-  var capacityPlace = window.map.noticeForm.querySelector('#capacity');
-  var title = window.map.noticeForm.querySelector('#title');
+window.form = (function () {
+  var noticeForm = document.querySelector('.notice__form');
+  var address = noticeForm.querySelector('#address');
+  var fieldsNotice = noticeForm.querySelectorAll('fieldset');
+  var disableFields = function () {
+    for (var i = 0; i < fieldsNotice.length; i++) {
+      fieldsNotice[i].disabled = true;
+    }
+  };
+  disableFields();
+  var enableFields = function () {
+    for (var i = 0; i < fieldsNotice.length; i++) {
+      fieldsNotice[i].disabled = false;
+    }
+  };
+  var enableForm = function () {
+    enableFields();
+    noticeForm.classList.remove('notice__form--disabled');
+  };
+  var typePlace = noticeForm.querySelector('#type');
+  var pricePlace = noticeForm.querySelector('#price');
+  var timeInField = noticeForm.querySelector('#timein');
+  var timeOutField = noticeForm.querySelector('#timeout');
+  var roomNumber = noticeForm.querySelector('#room_number');
+  var capacityPlace = noticeForm.querySelector('#capacity');
+  var title = noticeForm.querySelector('#title');
 
-  var formSubmit = window.map.noticeForm.querySelector('.form__submit');
-  // данные data.js
+  var formSubmit = noticeForm.querySelector('.form__submit');
+
 
   var MIN_PRICES = {
     palace: 10000,
@@ -24,7 +42,7 @@
     rooms3: ['3', '2', '1'],
     rooms100: ['0']
   };
-  // form.js
+
   var onTypePlaceChange = function (evt) {
     pricePlace.min = MIN_PRICES[evt.currentTarget.value];
   };
@@ -69,5 +87,10 @@
   timeOutField.addEventListener('change', syncTimeOutField);
   formSubmit.addEventListener('click', onSubmitClick);
   formSubmit.addEventListener('submit', onValuesDefault);
+  return {
+
+    enableForm: enableForm,
+    address: address
+  };
 
 })();
