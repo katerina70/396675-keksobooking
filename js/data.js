@@ -28,7 +28,7 @@ window.data = (function () {
     }
     return newArray;
   }
- var announcements = [];
+  var announcements = [];
   for (var n = 0; n < ANNOUNCEMENTS_COUNT; n++) {
     var locationX = getRandom(300, 900);
     var locationY = getRandom(200, 500);
