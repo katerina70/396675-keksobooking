@@ -1,5 +1,4 @@
 'use strict';
-
 window.data = (function () {
   var ENTER_KEYCODE = 13;
   var ESC_KEYCODE = 27;
@@ -29,8 +28,6 @@ window.data = (function () {
     }
     return newArray;
   }
-
-
   var announcements = [];
   for (var n = 0; n < ANNOUNCEMENTS_COUNT; n++) {
     var locationX = getRandom(300, 900);
