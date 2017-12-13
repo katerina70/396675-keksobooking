@@ -44,37 +44,9 @@ window.card = (function () {
     showFeatures(offerItem.features);
   };
 
-  var cardsClose = document.querySelector('.popup__close');
-  cardsClose.setAttribute.tabIndex = 0;
-
-  var onEscPress = function (evt) {
-    if (evt.keyCode === window.data.ESC_KEYCODE) {
-      card.classList.add('hidden');
-      document.querySelector('.map__pin--active').classList.remove('map__pin--active');
-    }
-  };
-  var onCloseEnterPress = function (evt) {
-    if (evt.keyCode === window.data.ENTER_KEYCODE) {
-      closeCard();
-      window.map.removeActivePin();
-    }
-  };
-  var openCard = function (index) {
-    fillCard(index);
-    card.classList.remove('hidden');
-    document.addEventListener('keydown', onEscPress);
-  };
-
-  var closeCard = function () {
-    card.classList.add('hidden');
-    document.removeEventListener('keydown', onEscPress);
-  };
-
-  cardsClose.addEventListener('click', closeCard);
-  cardsClose.addEventListener('keydown', onCloseEnterPress);
 
   return {
-    openCard: openCard,
+    fillCard: fillCard,
+    card: card
   };
-
 })();
