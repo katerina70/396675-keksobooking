@@ -57,6 +57,12 @@ window.card = (function () {
       window.map.removeActivePin();
     }
   };
+
+  var onCloseClick = function () {
+    closeCard();
+    window.map.removeActivePin();
+  };
+
   var openCard = function () {
     card.classList.remove('hidden');
     document.addEventListener('keydown', onEscPress);
@@ -65,7 +71,8 @@ window.card = (function () {
     card.classList.add('hidden');
     document.removeEventListener('keydown', onEscPress);
   };
-  cardsClose.addEventListener('click', closeCard);
+
+  cardsClose.addEventListener('click', onCloseClick);
   cardsClose.addEventListener('keydown', onCloseEnterPress);
 
   return {

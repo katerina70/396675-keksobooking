@@ -100,26 +100,25 @@ window.map = (function () {
   var activePin = null;
 
   var setPinActive = function (clickedPin) {
-    if (activePin) {
-      activePin.classList.remove('map__pin--active');
-    }
     clickedPin.classList.add('map__pin--active');
     activePin = clickedPin;
   };
   var removeActivePin = function () {
-    if (activePin !== null) {
+    if (activePin) {
       activePin.classList.remove('map__pin--active');
     }
   };
   var onPinClick = function (index) {
     return function () {
       window.showCard(index);
+      removeActivePin();
       setPinActive(pinElements[index]);
     };
   };
   var onPinEnterPress = function (evt, index) {
     if (evt.keyCode === window.data.ENTER_KEYCODE) {
       window.showCard(index);
+      removeActivePin();
       setPinActive(pinElements[index]);
     }
   };
