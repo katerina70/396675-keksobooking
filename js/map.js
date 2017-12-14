@@ -19,15 +19,6 @@ window.map = (function () {
   };
   hidePins();
 
-  for (var e = 0; e < pinElements.length; e++) {
-    pinElements[e].addEventListener('click', window.showCard.showCard(e));
-    pinElements[e].addEventListener('keydown', function (evt) {
-      if (evt.keyCode === window.data.ENTER_KEYCODE) {
-        window.showCard.showCard(e);
-      }
-    });
-  }
-
   var pinMain = document.querySelector('.map__pin--main');
 
   var mainPinHeight = 84;
@@ -105,4 +96,39 @@ window.map = (function () {
       openMap();
     }
   });
+
+  var activePin = null;
+
+  var setPinActive = function (clickedPin) {
+    if (activePin) {
+      activePin.classList.remove('map__pin--active');
+    }
+    clickedPin.classList.add('map__pin--active');
+    activePin = clickedPin;
+  };
+  var removeActivePin = function () {
+    if (activePin !== null) {
+      activePin.classList.remove('map__pin--active');
+    }
+  };
+  var onPinClick = function (index) {
+    return function () {
+      window.showCard(index);
+      setPinActive(pinElements[index]);
+    };
+  };
+  var onPinEnterPress = function (evt, index) {
+    if (evt.keyCode === window.data.ENTER_KEYCODE) {
+      window.showCard(index);
+      setPinActive(pinElements[index]);
+    }
+  };
+  for (var e = 0; e < pinElements.length; e++) {
+    pinElements[e].addEventListener('click', onPinClick(e));
+    pinElements[e].addEventListener('keydown', onPinEnterPress(e));
+  }
+  return {
+    removeActivePin: removeActivePin
+  };
+
 })();

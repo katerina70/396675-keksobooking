@@ -3,6 +3,7 @@ window.form = (function () {
   var noticeForm = document.querySelector('.notice__form');
   var address = noticeForm.querySelector('#address');
   var fieldsNotice = noticeForm.querySelectorAll('fieldset');
+
   var disableFields = function () {
     for (var i = 0; i < fieldsNotice.length; i++) {
       fieldsNotice[i].disabled = true;
@@ -18,6 +19,7 @@ window.form = (function () {
     enableFields();
     noticeForm.classList.remove('notice__form--disabled');
   };
+
   var typePlace = noticeForm.querySelector('#type');
   var pricePlace = noticeForm.querySelector('#price');
   var timeInField = noticeForm.querySelector('#timein');
@@ -37,19 +39,19 @@ window.form = (function () {
     bungalo: 0
   };
 
-  var onTypePlaceChange = function () {
-    pricePlace.min = MIN_PRICES[typePlace.value];
+  var onTypePlaceChange = function (fieldFirst, fieldSecond) {
+    fieldSecond.min = MIN_PRICES[fieldFirst.value];
   };
 
-  window.synchronizeFields(typePlace, pricePlace, MIN_PRICES, onTypePlaceChange);
+  window.synchronizeFields(typePlace, pricePlace, onTypePlaceChange);
 
   // время заезда-выезда
 
   var syncTime = function (timeFirst, timeSecond) {
     timeSecond.selectedIndex = timeFirst.selectedIndex;
   };
-  window.synchronizeFields(timeOutField, timeInField, null, syncTime);
-  window.synchronizeFields(timeInField, timeOutField, null, syncTime);
+  window.synchronizeFields(timeOutField, timeInField, syncTime);
+  window.synchronizeFields(timeInField, timeOutField, syncTime);
 
   // комнаты-гости
 
@@ -77,7 +79,7 @@ window.form = (function () {
   };
   var onSubmitClick = function () {
     checkValidField(title);
-    checkValidField(window.map.address);
+    checkValidField(address);
     checkValidField(pricePlace);
   };
   var onValuesDefault = function () {

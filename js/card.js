@@ -43,10 +43,34 @@ window.card = (function () {
     hideFeatures();
     showFeatures(offerItem.features);
   };
-
+  var cardsClose = document.querySelector('.popup__close');
+  cardsClose.setAttribute.tabIndex = 0;
+  var onEscPress = function (evt) {
+    if (evt.keyCode === window.data.ESC_KEYCODE) {
+      closeCard();
+      window.map.removeActivePin();
+    }
+  };
+  var onCloseEnterPress = function (evt) {
+    if (evt.keyCode === window.data.ENTER_KEYCODE) {
+      closeCard();
+      window.map.removeActivePin();
+    }
+  };
+  var openCard = function () {
+    card.classList.remove('hidden');
+    document.addEventListener('keydown', onEscPress);
+  };
+  var closeCard = function () {
+    card.classList.add('hidden');
+    document.removeEventListener('keydown', onEscPress);
+  };
+  cardsClose.addEventListener('click', closeCard);
+  cardsClose.addEventListener('keydown', onCloseEnterPress);
 
   return {
     fillCard: fillCard,
-    card: card
+    card: card,
+    openCard: openCard
   };
 })();
