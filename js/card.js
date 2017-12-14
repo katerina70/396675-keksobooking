@@ -43,14 +43,12 @@ window.card = (function () {
     hideFeatures();
     showFeatures(offerItem.features);
   };
-
   var cardsClose = document.querySelector('.popup__close');
   cardsClose.setAttribute.tabIndex = 0;
-
   var onEscPress = function (evt) {
     if (evt.keyCode === window.data.ESC_KEYCODE) {
-      card.classList.add('hidden');
-      document.querySelector('.map__pin--active').classList.remove('map__pin--active');
+      closeCard();
+      window.map.removeActivePin();
     }
   };
   var onCloseEnterPress = function (evt) {
@@ -59,22 +57,27 @@ window.card = (function () {
       window.map.removeActivePin();
     }
   };
-  var openCard = function (index) {
-    fillCard(index);
+
+  var onCloseClick = function () {
+    closeCard();
+    window.map.removeActivePin();
+  };
+
+  var openCard = function () {
     card.classList.remove('hidden');
     document.addEventListener('keydown', onEscPress);
   };
-
   var closeCard = function () {
     card.classList.add('hidden');
     document.removeEventListener('keydown', onEscPress);
   };
 
-  cardsClose.addEventListener('click', closeCard);
+  cardsClose.addEventListener('click', onCloseClick);
   cardsClose.addEventListener('keydown', onCloseEnterPress);
 
   return {
-    openCard: openCard,
+    fillCard: fillCard,
+    card: card,
+    openCard: openCard
   };
-
 })();

@@ -9,6 +9,7 @@ window.map = (function () {
     mapPins.appendChild(fragment);
   };
   showPins();
+
   var pinElements = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
 
   var hidePins = function () {
@@ -33,9 +34,11 @@ window.map = (function () {
 
   var getLimitedY = function (startY, limitedY) {
     var mapPinsoverlay = document.querySelector('.map__pinsoverlay');
+    var minMapY = 100;
     var maxMapY = mapPinsoverlay.offsetHeight;
     var maxMoveY = startY - pinMain.offsetTop + maxMapY - (mainPinHeight - mainPinShiftHeight);
-    var minMoveY = startY - pinMain.offsetTop + 100 - (mainPinHeight - mainPinShiftHeight);
+    var minMoveY = startY - pinMain.offsetTop +
+      minMapY - (mainPinHeight - mainPinShiftHeight);
     if (limitedY >= maxMoveY) {
       return maxMoveY;
     } else if (limitedY <= minMoveY) {
@@ -93,27 +96,29 @@ window.map = (function () {
       openMap();
     }
   });
+
   var activePin = null;
+
   var setPinActive = function (clickedPin) {
-    if (activePin) {
-      activePin.classList.remove('map__pin--active');
-    }
     clickedPin.classList.add('map__pin--active');
     activePin = clickedPin;
   };
   var removeActivePin = function () {
-    document.querySelector('.map__pin--active').classList.remove('map__pin--active');
+    if (activePin) {
+      activePin.classList.remove('map__pin--active');
+    }
   };
-
   var onPinClick = function (index) {
     return function () {
-      window.card.openCard(index);
+      window.showCard(index);
+      removeActivePin();
       setPinActive(pinElements[index]);
     };
   };
   var onPinEnterPress = function (evt, index) {
     if (evt.keyCode === window.data.ENTER_KEYCODE) {
-      window.card.openCard(index);
+      window.showCard(index);
+      removeActivePin();
       setPinActive(pinElements[index]);
     }
   };
@@ -121,8 +126,8 @@ window.map = (function () {
     pinElements[e].addEventListener('click', onPinClick(e));
     pinElements[e].addEventListener('keydown', onPinEnterPress(e));
   }
-
   return {
     removeActivePin: removeActivePin
   };
+
 })();

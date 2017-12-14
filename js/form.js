@@ -3,6 +3,7 @@ window.form = (function () {
   var noticeForm = document.querySelector('.notice__form');
   var address = noticeForm.querySelector('#address');
   var fieldsNotice = noticeForm.querySelectorAll('fieldset');
+
   var disableFields = function () {
     for (var i = 0; i < fieldsNotice.length; i++) {
       fieldsNotice[i].disabled = true;
@@ -18,6 +19,7 @@ window.form = (function () {
     enableFields();
     noticeForm.classList.remove('notice__form--disabled');
   };
+
   var typePlace = noticeForm.querySelector('#type');
   var pricePlace = noticeForm.querySelector('#price');
   var timeInField = noticeForm.querySelector('#timein');
@@ -28,6 +30,7 @@ window.form = (function () {
 
   var formSubmit = noticeForm.querySelector('.form__submit');
 
+  // минимальная цена - кол-во комнат
 
   var MIN_PRICES = {
     palace: 10000,
@@ -36,26 +39,28 @@ window.form = (function () {
     bungalo: 0
   };
 
+  var onTypePlaceChange = function (fieldFirst, fieldSecond) {
+    fieldSecond.min = MIN_PRICES[fieldFirst.value];
+  };
+
+  window.synchronizeFields(typePlace, pricePlace, onTypePlaceChange);
+
+  // время заезда-выезда
+
+  var syncTime = function (timeFirst, timeSecond) {
+    timeSecond.selectedIndex = timeFirst.selectedIndex;
+  };
+  window.synchronizeFields(timeOutField, timeInField, syncTime);
+  window.synchronizeFields(timeInField, timeOutField, syncTime);
+
+  // комнаты-гости
+
   var CAPACITY_ROOMS = {
     rooms1: ['1'],
     rooms2: ['2', '1'],
     rooms3: ['3', '2', '1'],
     rooms100: ['0']
   };
-
-  var onTypePlaceChange = function (evt) {
-    pricePlace.min = MIN_PRICES[evt.currentTarget.value];
-  };
-  // время заезда-выезда
-  var syncTimeInField = function () {
-    timeOutField.selectedIndex = timeInField.selectedIndex;
-  };
-  var syncTimeOutField = function () {
-    timeInField.selectedIndex = timeOutField.selectedIndex;
-  };
-
-  // комнаты-гости
-
   var onCapacityChange = function (evt) {
     var roomNumberValue = 'rooms' + evt.currentTarget.value;
     for (var i = 0; i < capacityPlace.options.length; i++) {
@@ -74,17 +79,14 @@ window.form = (function () {
   };
   var onSubmitClick = function () {
     checkValidField(title);
-    checkValidField(window.map.address);
+    checkValidField(address);
     checkValidField(pricePlace);
   };
   var onValuesDefault = function () {
     formSubmit.removeEventListener('click', onSubmitClick);
   };
 
-  typePlace.addEventListener('change', onTypePlaceChange);
   roomNumber.addEventListener('change', onCapacityChange);
-  timeInField.addEventListener('change', syncTimeInField);
-  timeOutField.addEventListener('change', syncTimeOutField);
   formSubmit.addEventListener('click', onSubmitClick);
   formSubmit.addEventListener('submit', onValuesDefault);
 
@@ -93,4 +95,3 @@ window.form = (function () {
     address: address
   };
 })();
-
