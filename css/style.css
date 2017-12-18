@@ -746,6 +746,62 @@ textarea:focus {
   background-position: -10px -10px;
 }
 
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.popup-form {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 500px;
+  margin-top: -50px;
+  margin-left: -250px;
+  padding: 40px 20px;
+  background-color: #fff;
+  text-align: center;
+  z-index: 20;
+}
+
+.popup-form__close {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  border: 2px solid red;
+  border-radius: 50%;
+
+}
+
+.popup-form__close:before,
+.popup-form__close:after {
+  content: "";
+  position: absolute;
+  top: 9px;
+  left: 2px;
+  width: 16px;
+  height: 2px;
+  background: red;
+}
+
+.popup-form__close:before {
+  webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.popup-form__close:after {
+  webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+
 .hidden {
   display: none;
 }

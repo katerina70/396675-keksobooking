@@ -1,17 +1,19 @@
 'use strict';
 window.map = (function () {
-  var mapPins = document.querySelector('.map__pins');
-  var showPins = function () {
+
+  var showPins = function (array) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < window.data.announcements.length; i++) {
-      fragment.appendChild(window.pin.createPin(window.data.announcements[i]));
+    for (var i = 0; i < array.length; i++) {
+      fragment.appendChild(window.pin.createPin(array[i]));
     }
-    mapPins.appendChild(fragment);
+    document.querySelector('.map__pins').appendChild(fragment);
   };
-  showPins();
+  var onLoadData = function (data) {
+    showPins(data);
+  };
+  window.backend.load(onLoadData, window.popup.errorMessageShow);
 
-  var pinElements = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
-
+  var pinElements = document.querySelectorAll('.map__pin:not(.map__pin--main)');
   var hidePins = function () {
     for (var i = 0; i < pinElements.length; i++) {
       pinElements[i].classList.add('hidden');
@@ -126,8 +128,10 @@ window.map = (function () {
     pinElements[e].addEventListener('click', onPinClick(e));
     pinElements[e].addEventListener('keydown', onPinEnterPress(e));
   }
+
   return {
-    removeActivePin: removeActivePin
+    removeActivePin: removeActivePin,
+    showPins: showPins
   };
 
 })();

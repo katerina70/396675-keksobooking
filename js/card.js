@@ -5,6 +5,7 @@ window.card = (function () {
   document.querySelector('.map').appendChild(card);
 
   card.classList.add('hidden');
+
   var getPlaceType = function (type) {
     switch (type) {
       case 'flat':
@@ -28,8 +29,8 @@ window.card = (function () {
     }
   };
 
-  var fillCard = function (index) {
-    var offerItem = window.data.announcements[index].offer;
+  var fillCard = function (index, array) {
+    var offerItem = array[index].offer;
     var articleP = card.querySelectorAll('p');
     card.querySelector('h3').textContent = offerItem.title;
     card.querySelector('small').textContent = offerItem.address;
@@ -38,10 +39,10 @@ window.card = (function () {
     articleP[2].textContent = offerItem.rooms + ' комнаты для ' + offerItem.guests + ' гостей';
     articleP[3].textContent = 'Заезд после ' + offerItem.checkin + ', выезд до' + offerItem.checkout;
     articleP[4].textContent = offerItem.description;
-    card.querySelector('.popup__avatar').src = window.data.announcements[index].author.avatar;
-
+    card.querySelector('.popup__avatar').src = array[index].author.avatar;
     hideFeatures();
     showFeatures(offerItem.features);
+
   };
   var cardsClose = document.querySelector('.popup__close');
   cardsClose.setAttribute.tabIndex = 0;

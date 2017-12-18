@@ -74,22 +74,26 @@ window.form = (function () {
     capacityPlace.options[selectedOption].selected = true;
   };
 
-  var checkValidField = function (field) {
-    field.style.borderColor = (!field.validity.valid) ? '#ff5635' : '';
-  };
-  var onSubmitClick = function () {
-    checkValidField(title);
-    checkValidField(address);
-    checkValidField(pricePlace);
-  };
-  var onValuesDefault = function () {
-    formSubmit.removeEventListener('click', onSubmitClick);
-  };
-
   roomNumber.addEventListener('change', onCapacityChange);
-  formSubmit.addEventListener('click', onSubmitClick);
-  formSubmit.addEventListener('submit', onValuesDefault);
 
+  title.addEventListener('invalid', function () {
+    title.style.borderColor = '#ff5635';
+  });
+  pricePlace.addEventListener('invalid', function () {
+    pricePlace.style.borderColor = '#ff5635';
+  });
+
+  var sendHandler = function () {
+    window.popup.successMessageShow();
+    noticeForm.reset();
+  };
+
+  formSubmit.addEventListener('submit', function (evt) {
+
+    window.backend.save(new FormData(noticeForm), sendHandler, window.popup.errorMessageShow);
+    evt.preventDefault();
+
+  });
   return {
     enableForm: enableForm,
     address: address
