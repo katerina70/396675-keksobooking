@@ -1,5 +1,8 @@
 'use strict';
-window.showCard = function (index, array) {
-  window.card.fillCard(index, array);
+
+window.showCard = function (announcement) {
+
+  window.card.fillCard(announcement);
   window.card.openCard();
+
 };
