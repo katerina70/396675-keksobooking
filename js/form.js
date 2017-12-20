@@ -26,9 +26,6 @@ window.form = (function () {
   var timeOutField = noticeForm.querySelector('#timeout');
   var roomNumber = noticeForm.querySelector('#room_number');
   var capacityPlace = noticeForm.querySelector('#capacity');
-  var title = noticeForm.querySelector('#title');
-
-  var formSubmit = noticeForm.querySelector('.form__submit');
 
   // минимальная цена - кол-во комнат
 
@@ -74,22 +71,26 @@ window.form = (function () {
     capacityPlace.options[selectedOption].selected = true;
   };
 
-  var checkValidField = function (field) {
-    field.style.borderColor = (!field.validity.valid) ? '#ff5635' : '';
-  };
-  var onSubmitClick = function () {
-    checkValidField(title);
-    checkValidField(address);
-    checkValidField(pricePlace);
-  };
-  var onValuesDefault = function () {
-    formSubmit.removeEventListener('click', onSubmitClick);
-  };
-
   roomNumber.addEventListener('change', onCapacityChange);
-  formSubmit.addEventListener('click', onSubmitClick);
-  formSubmit.addEventListener('submit', onValuesDefault);
 
+  var sendFormInvalid = function (evt) {
+    evt.target.style.borderColor = '#ff5635';
+  };
+
+  var sendHandler = function () {
+    window.popup.successMessageShow();
+    noticeForm.reset();
+  };
+
+  noticeForm.addEventListener('submit', function (evt) {
+
+    window.backend.save(new FormData(noticeForm), sendHandler, window.popup.errorMessageShow);
+    evt.preventDefault();
+
+  });
+  noticeForm.addEventListener('invalid', function (evt) {
+    sendFormInvalid(evt);
+  }, true);
   return {
     enableForm: enableForm,
     address: address

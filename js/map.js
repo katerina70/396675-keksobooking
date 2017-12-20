@@ -1,30 +1,30 @@
 'use strict';
 window.map = (function () {
-  var mapPins = document.querySelector('.map__pins');
-  var showPins = function () {
+  var MAIN_PIN_HEIGHT = 84;
+  var MAIN_PIN_SHIFT = 34;
+
+  var showPins = function (array) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < window.data.announcements.length; i++) {
-      fragment.appendChild(window.pin.createPin(window.data.announcements[i]));
+    for (var i = 0; i < array.length; i++) {
+      fragment.appendChild(window.pin.createPin(array[i]));
     }
-    mapPins.appendChild(fragment);
+    document.querySelector('.map__pins').appendChild(fragment);
   };
-  showPins();
-
-  var pinElements = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
-
-  var hidePins = function () {
-    for (var i = 0; i < pinElements.length; i++) {
-      pinElements[i].classList.add('hidden');
-    }
+  var onLoadData = function (data) {
+    showPins(data);
   };
-  hidePins();
 
   var pinMain = document.querySelector('.map__pin--main');
+  var onPinMainClick = function () {
+    pinMain.removeEventListener('mouseup', onPinMainClick);
+    window.backend.load(onLoadData, window.popup.errorMessageShow);
+    document.querySelector('.map').classList.remove('map--faded');
+    window.form.enableForm();
 
-  var mainPinHeight = 84;
-  var mainPinShiftHeight = 34;
+  };
+
   var getMainPinCoordinates = function () {
-    var mainPinY = pinMain.offsetTop + mainPinHeight - mainPinShiftHeight;
+    var mainPinY = pinMain.offsetTop + MAIN_PIN_HEIGHT - MAIN_PIN_SHIFT;
     var mainPinX = pinMain.offsetLeft;
     return {
       coordinateY: mainPinY,
@@ -36,9 +36,9 @@ window.map = (function () {
     var mapPinsoverlay = document.querySelector('.map__pinsoverlay');
     var minMapY = 100;
     var maxMapY = mapPinsoverlay.offsetHeight;
-    var maxMoveY = startY - pinMain.offsetTop + maxMapY - (mainPinHeight - mainPinShiftHeight);
+    var maxMoveY = startY - pinMain.offsetTop + maxMapY - (MAIN_PIN_HEIGHT - MAIN_PIN_SHIFT);
     var minMoveY = startY - pinMain.offsetTop +
-      minMapY - (mainPinHeight - mainPinShiftHeight);
+      minMapY - (MAIN_PIN_HEIGHT - MAIN_PIN_SHIFT);
     if (limitedY >= maxMoveY) {
       return maxMoveY;
     } else if (limitedY <= minMoveY) {
@@ -47,8 +47,10 @@ window.map = (function () {
       return limitedY;
     }
   };
+
+
   // перетаскивание пина
-  pinMain.addEventListener('mousedown', function (evt) {
+  var onPinMainMove = function (evt) {
     evt.preventDefault();
     var startCoords = {
       x: evt.clientX,
@@ -74,60 +76,22 @@ window.map = (function () {
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
       window.form.address.value = getMainPinCoordinates().coordinateX + ' ,' + getMainPinCoordinates().coordinateY;
-      openMap();
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
-  });
-
-  // открытие карты
-  var openMap = function () {
-    document.querySelector('.map').classList.remove('map--faded');
-    window.form.enableForm();
-    for (var i = 0; i < pinElements.length; i++) {
-      pinElements[i].classList.remove('hidden');
-    }
   };
+
+  pinMain.addEventListener('mousedown', function (evt) {
+    onPinMainMove(evt);
+  });
 
   pinMain.addEventListener('keydown', function (evt) {
     if (evt.keyCode === window.data.ENTER_KEYCODE) {
-      openMap();
+      onPinMainClick();
     }
   });
-
-  var activePin = null;
-
-  var setPinActive = function (clickedPin) {
-    clickedPin.classList.add('map__pin--active');
-    activePin = clickedPin;
-  };
-  var removeActivePin = function () {
-    if (activePin) {
-      activePin.classList.remove('map__pin--active');
-    }
-  };
-  var onPinClick = function (index) {
-    return function () {
-      window.showCard(index);
-      removeActivePin();
-      setPinActive(pinElements[index]);
-    };
-  };
-  var onPinEnterPress = function (evt, index) {
-    if (evt.keyCode === window.data.ENTER_KEYCODE) {
-      window.showCard(index);
-      removeActivePin();
-      setPinActive(pinElements[index]);
-    }
-  };
-  for (var e = 0; e < pinElements.length; e++) {
-    pinElements[e].addEventListener('click', onPinClick(e));
-    pinElements[e].addEventListener('keydown', onPinEnterPress(e));
-  }
-  return {
-    removeActivePin: removeActivePin
-  };
+  pinMain.addEventListener('mouseup', onPinMainClick);
 
 })();
