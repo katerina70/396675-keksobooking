@@ -13,8 +13,8 @@ window.form = (function () {
     house: 5000,
     bungalo: 0
   };
-  var fileImageChooser = document.querySelector('.form__photo-container input[type=file]');
-  var fileAvatarChooser = document.querySelector('.notice__photo input[type=file]');
+  var fileImageChooserElement = document.querySelector('.form__photo-container input[type=file]');
+  var fileAvatarChooserElement = document.querySelector('.notice__photo input[type=file]');
   var previewImageElement = document.querySelector('.form__photo-container .drop-zone');
   var previewAvatarElement = document.querySelector('.notice__preview img');
   var noticeFormElement = document.querySelector('.notice__form');
@@ -80,7 +80,7 @@ window.form = (function () {
     previewAvatarElement.src = 'img/muffin.png';
   };
   var onSubmitData = function () {
-    window.popup.successMessageShow();
+    window.popup.showSuccessMessage();
     var images = previewImageElement.querySelectorAll('img');
     removeFotos(images);
     noticeFormElement.reset();
@@ -116,15 +116,15 @@ window.form = (function () {
     preview.appendChild(node);
   };
 
-  fileImageChooser.addEventListener('change', function () {
-    onChangeFiles(fileImageChooser, previewImageElement, imagePreviewShow);
+  fileImageChooserElement.addEventListener('change', function () {
+    onChangeFiles(fileImageChooserElement, previewImageElement, imagePreviewShow);
   });
-  fileAvatarChooser.addEventListener('change', function () {
-    onChangeFiles(fileAvatarChooser, previewAvatarElement, avatarPreviewShow);
+  fileAvatarChooserElement.addEventListener('change', function () {
+    onChangeFiles(fileAvatarChooserElement, previewAvatarElement, avatarPreviewShow);
   });
 
   noticeFormElement.addEventListener('submit', function (evt) {
-    window.backend.save(new FormData(noticeFormElement), onSubmitData, window.popup.errorMessageShow);
+    window.backend.save(new FormData(noticeFormElement), onSubmitData, window.popup.showErrorMessage);
     evt.preventDefault();
   });
 

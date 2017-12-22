@@ -48,7 +48,7 @@ window.map = (function () {
 
   var onPinMainClick = function () {
     pinMainElement.removeEventListener('mouseup', onPinMainClick);
-    window.backend.load(onLoadData, window.popup.errorMessageShow);
+    window.backend.load(onLoadData, window.popup.showErrorMessage);
     document.querySelector('.map').classList.remove('map--faded');
     window.form.enable();
   };
