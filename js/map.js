@@ -5,64 +5,57 @@ window.map = (function () {
   var MAIN_PIN_SHIFT = 34;
   var TIME_STEP = 500;
   var offers = [];
-  var filters = document.querySelector('.map__filters');
+  var filterElements = document.querySelector('.map__filters');
+  var pinElements;
 
   var showPins = function (array) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < array.length; i++) {
-      fragment.appendChild(window.pin.createPin(array[i]));
-    }
+    array.forEach(function (item) {
+      fragment.appendChild(window.pin.create(item));
+    });
     document.querySelector('.map__pins').appendChild(fragment);
   };
 
   var hidePins = function () {
-    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-    for (var i = 0; i < pins.length; i++) {
-      pins[i].classList.add('hidden');
-    }
+
+    pinElements.forEach(function (item) {
+      window.util.hideElement(item);
+    });
   };
 
   var onLoadData = function (data) {
     offers = data;
     var visiblePins = offers.slice(MAX_PINS);
     showPins(visiblePins);
+    pinElements = document.querySelectorAll('.map__pin:not(.map__pin--main)');
   };
 
   var updateMap = function () {
-    var filteredPins = window.filters.filterOffers(offers);
+    var filteredPins = window.filters.offers(offers);
     hidePins();
-    window.card.closeCard();
+    window.card.close();
     if (filteredPins.length > MAX_PINS) {
       filteredPins = filteredPins.slice(MAX_PINS);
     }
     showPins(filteredPins);
   };
 
-  var lastTimeout;
-  var debounce = function (functionToDebounce, time) {
-    if (lastTimeout) {
-      window.clearTimeout(lastTimeout);
-    }
-    lastTimeout = window.setTimeout(function () {
-      functionToDebounce();
-    }, time);
-  };
-
-  filters.addEventListener('change', function () {
-    debounce(updateMap, TIME_STEP);
+  filterElements.addEventListener('change', function () {
+    window.util.debounce(updateMap, TIME_STEP);
   });
 
-  var pinMain = document.querySelector('.map__pin--main');
+  var pinMainElement = document.querySelector('.map__pin--main');
+
   var onPinMainClick = function () {
-    pinMain.removeEventListener('mouseup', onPinMainClick);
+    pinMainElement.removeEventListener('mouseup', onPinMainClick);
     window.backend.load(onLoadData, window.popup.errorMessageShow);
     document.querySelector('.map').classList.remove('map--faded');
-    window.form.enableForm();
+    window.form.enable();
   };
 
   var getMainPinCoordinates = function () {
-    var mainPinY = pinMain.offsetTop + MAIN_PIN_HEIGHT - MAIN_PIN_SHIFT;
-    var mainPinX = pinMain.offsetLeft;
+    var mainPinY = pinMainElement.offsetTop + MAIN_PIN_HEIGHT - MAIN_PIN_SHIFT;
+    var mainPinX = pinMainElement.offsetLeft;
     return {
       coordinateY: mainPinY,
       coordinateX: mainPinX
@@ -73,8 +66,8 @@ window.map = (function () {
     var mapPinsoverlay = document.querySelector('.map__pinsoverlay');
     var minMapY = 100;
     var maxMapY = mapPinsoverlay.offsetHeight;
-    var maxMoveY = startY - pinMain.offsetTop + maxMapY - (MAIN_PIN_HEIGHT - MAIN_PIN_SHIFT);
-    var minMoveY = startY - pinMain.offsetTop +
+    var maxMoveY = startY - pinMainElement.offsetTop + maxMapY - (MAIN_PIN_HEIGHT - MAIN_PIN_SHIFT);
+    var minMoveY = startY - pinMainElement.offsetTop +
       minMapY - (MAIN_PIN_HEIGHT - MAIN_PIN_SHIFT);
     if (limitedY >= maxMoveY) {
       return maxMoveY;
@@ -104,8 +97,8 @@ window.map = (function () {
         y: moveEvt.clientY
       };
 
-      pinMain.style.top = (pinMain.offsetTop - shift.y) + 'px';
-      pinMain.style.left = (pinMain.offsetLeft - shift.x) + 'px';
+      pinMainElement.style.top = (pinMainElement.offsetTop - shift.y) + 'px';
+      pinMainElement.style.left = (pinMainElement.offsetLeft - shift.x) + 'px';
     };
 
     var onMouseUp = function (upEvt) {
@@ -118,15 +111,15 @@ window.map = (function () {
     document.addEventListener('mouseup', onMouseUp);
   };
 
-  pinMain.addEventListener('mousedown', function (evt) {
+  pinMainElement.addEventListener('mousedown', function (evt) {
     onPinMainMove(evt);
   });
 
-  pinMain.addEventListener('keydown', function (evt) {
+  pinMainElement.addEventListener('keydown', function (evt) {
     if (evt.keyCode === window.data.ENTER_KEYCODE) {
       onPinMainClick();
     }
   });
-  pinMain.addEventListener('mouseup', onPinMainClick);
+  pinMainElement.addEventListener('mouseup', onPinMainClick);
 
 })();

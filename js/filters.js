@@ -34,9 +34,9 @@ window.filters = (function () {
   };
 
   var filterOffers = function (array) {
-    var selectedFeatures = document.querySelectorAll('.map__filter-set input[type="checkbox"]:checked');
-    var mapFiltersList = Array.from(document.querySelectorAll('.map__filter'));
-    var selectedFilters = mapFiltersList.filter(function (filter) {
+    var selectedFeaturesElements = document.querySelectorAll('.map__filter-set input[type="checkbox"]:checked');
+    var mapFilterElements = Array.from(document.querySelectorAll('.map__filter'));
+    var selectedFilters = mapFilterElements.filter(function (filter) {
       return filter.value !== 'any';
     });
 
@@ -47,7 +47,7 @@ window.filters = (function () {
       newArray = (type === 'price') ? filterPrice(newArray, item.value) : filterValue(newArray, item.value, type);
     });
 
-    selectedFeatures.forEach(function (item) {
+    selectedFeaturesElements.forEach(function (item) {
       newArray = filterFeatures(newArray, item.value);
     });
 
@@ -55,6 +55,6 @@ window.filters = (function () {
   };
 
   return {
-    filterOffers: filterOffers
+    offers: filterOffers
   };
 })();

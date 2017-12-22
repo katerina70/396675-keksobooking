@@ -45,7 +45,7 @@ window.pin = (function () {
   };
 
   return {
-    createPin: createPin,
-    removeActivePin: removeActivePin
+    create: createPin,
+    remove: removeActivePin
   };
 })();
