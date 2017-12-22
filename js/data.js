@@ -4,7 +4,6 @@ window.data = (function () {
   var ESC_KEYCODE = 27;
 
   return {
-
     ENTER_KEYCODE: ENTER_KEYCODE,
     ESC_KEYCODE: ESC_KEYCODE,
   };

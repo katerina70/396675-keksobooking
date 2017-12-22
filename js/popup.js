@@ -1,6 +1,6 @@
 'use strict';
 window.popup = (function () {
-  var SUCCESS_MESSAGE = 'Поздравляем, данные отправлены!';
+  var SUCCESS_MESSAGE = 'Поздравляем, ваши данные отправлены!';
   var popupForm = document.querySelector('.popup-form');
   var overlay = document.querySelector('.popup-overlay');
   var close = document.querySelector('.popup-form__close');
@@ -26,6 +26,7 @@ window.popup = (function () {
   };
 
   close.addEventListener('click', closePopup);
+
   return {
     errorMessageShow: errorMessageShow,
     successMessageShow: successMessageShow

@@ -1,7 +1,11 @@
 'use strict';
 window.map = (function () {
+  var MAX_PINS = 5;
   var MAIN_PIN_HEIGHT = 84;
   var MAIN_PIN_SHIFT = 34;
+  var TIME_STEP = 500;
+  var offers = [];
+  var filters = document.querySelector('.map__filters');
 
   var showPins = function (array) {
     var fragment = document.createDocumentFragment();
@@ -10,9 +14,43 @@ window.map = (function () {
     }
     document.querySelector('.map__pins').appendChild(fragment);
   };
-  var onLoadData = function (data) {
-    showPins(data);
+
+  var hidePins = function () {
+    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    for (var i = 0; i < pins.length; i++) {
+      pins[i].classList.add('hidden');
+    }
   };
+
+  var onLoadData = function (data) {
+    offers = data;
+    var visiblePins = offers.slice(MAX_PINS);
+    showPins(visiblePins);
+  };
+
+  var updateMap = function () {
+    var filteredPins = window.filters.filterOffers(offers);
+    hidePins();
+    window.card.closeCard();
+    if (filteredPins.length > MAX_PINS) {
+      filteredPins = filteredPins.slice(MAX_PINS);
+    }
+    showPins(filteredPins);
+  };
+
+  var lastTimeout;
+  var debounce = function (functionToDebounce, time) {
+    if (lastTimeout) {
+      window.clearTimeout(lastTimeout);
+    }
+    lastTimeout = window.setTimeout(function () {
+      functionToDebounce();
+    }, time);
+  };
+
+  filters.addEventListener('change', function () {
+    debounce(updateMap, TIME_STEP);
+  });
 
   var pinMain = document.querySelector('.map__pin--main');
   var onPinMainClick = function () {
@@ -20,7 +58,6 @@ window.map = (function () {
     window.backend.load(onLoadData, window.popup.errorMessageShow);
     document.querySelector('.map').classList.remove('map--faded');
     window.form.enableForm();
-
   };
 
   var getMainPinCoordinates = function () {
@@ -48,8 +85,6 @@ window.map = (function () {
     }
   };
 
-
-  // перетаскивание пина
   var onPinMainMove = function (evt) {
     evt.preventDefault();
     var startCoords = {

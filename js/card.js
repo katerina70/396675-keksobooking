@@ -1,10 +1,10 @@
 'use strict';
 window.card = (function () {
   var card = document.querySelector('template').content.querySelector('.map__card').cloneNode(true);
-
   document.querySelector('.map').appendChild(card);
 
   card.classList.add('hidden');
+
   var getPlaceType = function (type) {
     switch (type) {
       case 'flat':
@@ -14,6 +14,18 @@ window.card = (function () {
       default:
         return 'Бунгало';
     }
+  };
+
+  var closeCard = function () {
+    if (card) {
+      card.classList.add('hidden');
+    }
+    document.removeEventListener('keydown', onEscPress);
+  };
+
+  var openCard = function () {
+    card.classList.remove('hidden');
+    document.addEventListener('keydown', onEscPress);
   };
 
   var onEscPress = function (evt) {
@@ -34,17 +46,8 @@ window.card = (function () {
     window.pin.removeActivePin();
   };
 
-  var closeCard = function () {
-
-    card.classList.add('hidden');
-    document.removeEventListener('keydown', onEscPress);
-  };
-  var openCard = function () {
-    card.classList.remove('hidden');
-    document.addEventListener('keydown', onEscPress);
-  };
-
   var featuresList = card.querySelectorAll('.feature');
+
   var hideFeatures = function () {
     for (var i = 0; i < featuresList.length; i++) {
       featuresList[i].classList.add('hidden');
@@ -56,11 +59,11 @@ window.card = (function () {
       featuresList[i].classList.remove('hidden');
     }
   };
+
   var cardsClose = card.querySelector('.popup__close');
   cardsClose.setAttribute.tabIndex = 0;
 
   var fillCard = function (announcement) {
-
     var offerItem = announcement.offer;
     var articleP = card.querySelectorAll('p');
     card.querySelector('h3').textContent = offerItem.title;
@@ -81,6 +84,6 @@ window.card = (function () {
   return {
     fillCard: fillCard,
     openCard: openCard,
-
+    closeCard: closeCard
   };
 })();

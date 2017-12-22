@@ -1,5 +1,7 @@
 'use strict';
 window.pin = (function () {
+  var PIN_WIDTH = 44;
+  var PIN_HEIGHT = 65;
   var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
   var activePin = null;
 
@@ -30,10 +32,9 @@ window.pin = (function () {
 
   var createPin = function (ad) {
     var pin = pinTemplate.cloneNode(true);
-    pin.style.left = (ad.location.x - 20) + 'px';
-    pin.style.top = (ad.location.y - 60) + 'px';
+    pin.style.left = (ad.location.x - PIN_WIDTH / 2) + 'px';
+    pin.style.top = (ad.location.y - PIN_HEIGHT) + 'px';
     pin.querySelector('img').src = ad.author.avatar;
-
     pin.addEventListener('click', function (evt) {
       onPinClick(evt, ad);
     });
