@@ -63,9 +63,8 @@ window.map = (function () {
   };
 
   var getLimitedY = function (startY, limitedY) {
-    var mapPinsoverlay = document.querySelector('.map__pinsoverlay');
     var minMapY = 100;
-    var maxMapY = mapPinsoverlay.offsetHeight;
+    var maxMapY = 500;
     var maxMoveY = startY - pinMainElement.offsetTop + maxMapY - (MAIN_PIN_HEIGHT - MAIN_PIN_SHIFT);
     var minMoveY = startY - pinMainElement.offsetTop +
       minMapY - (MAIN_PIN_HEIGHT - MAIN_PIN_SHIFT);
@@ -73,9 +72,9 @@ window.map = (function () {
       return maxMoveY;
     } else if (limitedY <= minMoveY) {
       return minMoveY;
-    } else {
-      return limitedY;
     }
+    return limitedY;
+
   };
 
   var onPinMainMove = function (evt) {
